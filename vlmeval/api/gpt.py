@@ -2,6 +2,7 @@ from ..smp import *
 import os
 import sys
 from .base import BaseAPI
+from video_noise.noise_applier import NoiseRegistry 
 
 APIBASES = {
     'OFFICIAL': 'https://api.openai.com/v1/chat/completions',
@@ -146,27 +147,50 @@ class OpenAIWrapper(BaseAPI):
 
     # inputs can be a lvl-2 nested list: [content1, content2, content3, ...]
     # content can be a string or a list of image & text
-    def prepare_itlist(self, inputs):
+    def prepare_itlist(self, inputs, noise_name=None, ratio=None):
         assert np.all([isinstance(x, dict) for x in inputs])
         has_images = np.sum([x['type'] == 'image' for x in inputs])
         if has_images:
+            from torchvision.io import read_image
+            from torchvision.transforms import ToPILImage
+            import torch
+            image_paths = []
             content_list = []
+
             for msg in inputs:
                 if msg['type'] == 'text':
-                    content_list.append(dict(type='text', text=msg['value']))
+                    content_list.append({'type': 'text', 'text': msg['value']})
                 elif msg['type'] == 'image':
-                    from PIL import Image
-                    img = Image.open(msg['value'])
-                    b64 = encode_image_to_base64(img, target_size=self.img_size)
-                    img_struct = dict(url=f'data:image/jpeg;base64,{b64}', detail=self.img_detail)
-                    content_list.append(dict(type='image_url', image_url=img_struct))
+                    image_paths.append(msg['value'])
+            if image_paths:
+                img_tensors = [read_image(path) for path in image_paths]  
+            video = torch.stack(img_tensors, dim=0)
+            if noise_name is not None and ratio:
+                video = NoiseRegistry.get_noise(noise_name)(video, ratio).cpu()
+            to_pil = ToPILImage()
+
+            for frame in video:
+                pil_img = to_pil(frame)
+                b64 = encode_image_to_base64(pil_img, target_size=self.img_size)
+                img_struct = dict(url=f'data:image/jpeg;base64,{b64}', detail=self.img_detail)
+                content_list.append(dict(type='image_url', image_url=img_struct))
+
+            # for msg in inputs:
+            #     if msg['type'] == 'text':
+            #         content_list.append(dict(type='text', text=msg['value']))
+            #     elif msg['type'] == 'image':
+            #         from PIL import Image
+            #         img = Image.open(msg['value'])
+            #         b64 = encode_image_to_base64(img, target_size=self.img_size)
+            #         img_struct = dict(url=f'data:image/jpeg;base64,{b64}', detail=self.img_detail)
+            #         content_list.append(dict(type='image_url', image_url=img_struct))
         else:
             assert all([x['type'] == 'text' for x in inputs])
             text = '\n'.join([x['value'] for x in inputs])
             content_list = [dict(type='text', text=text)]
         return content_list
 
-    def prepare_inputs(self, inputs):
+    def prepare_inputs(self, inputs, noise_name=None, ratio=None):
         input_msgs = []
         if self.system_prompt is not None:
             input_msgs.append(dict(role='system', content=self.system_prompt))
@@ -175,13 +199,13 @@ class OpenAIWrapper(BaseAPI):
         if 'role' in inputs[0]:
             assert inputs[-1]['role'] == 'user', inputs[-1]
             for item in inputs:
-                input_msgs.append(dict(role=item['role'], content=self.prepare_itlist(item['content'])))
+                input_msgs.append(dict(role=item['role'], content=self.prepare_itlist(item['content'], noise_name, ratio)))
         else:
-            input_msgs.append(dict(role='user', content=self.prepare_itlist(inputs)))
+            input_msgs.append(dict(role='user', content=self.prepare_itlist(inputs, noise_name, ratio)))
         return input_msgs
 
-    def generate_inner(self, inputs, **kwargs) -> str:
-        input_msgs = self.prepare_inputs(inputs)
+    def generate_inner(self, inputs, noise_name=None, ratio=None, **kwargs) -> str:
+        input_msgs = self.prepare_inputs(inputs, noise_name, ratio)
         temperature = kwargs.pop('temperature', self.temperature)
         max_tokens = kwargs.pop('max_tokens', self.max_tokens)
 
@@ -271,5 +295,5 @@ class OpenAIWrapper(BaseAPI):
 
 class GPT4V(OpenAIWrapper):
 
-    def generate(self, message, dataset=None):
-        return super(GPT4V, self).generate(message)
+    def generate(self, message, noise_name=None, ratio=None, dataset=None):
+        return super(GPT4V, self).generate(message, noise_name, ratio)

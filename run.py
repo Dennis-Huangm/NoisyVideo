@@ -148,6 +148,9 @@ You can launch the evaluation by setting either --data and --model or --config.
     parser.add_argument('--reuse', action='store_true')
     # Reuse-aux: if set, when reuse is True, will also reuse the auxiliary evaluation files
     parser.add_argument('--reuse-aux', type=bool, default=True, help='reuse auxiliary evaluation files')
+    # Noise config
+    parser.add_argument('--noise_name', type=str, default=None, help='Types of noise application')
+    parser.add_argument('--ratio', type=float, default=None, help='Proportion of noise frames', choices=[0.3, 0.6, 0.9])
 
     args = parser.parse_args()
     return args
@@ -216,7 +219,7 @@ def main():
                 dist.barrier()
 
             try:
-                result_file_base = f'{model_name}_{dataset_name}.xlsx'
+                result_file_base = f'{model_name}_{dataset_name}_{args.noise_name}_{args.ratio}.xlsx'
 
                 if use_config:
                     if world_size > 1:
@@ -295,12 +298,16 @@ def main():
 
                 # Perform the Inference
                 if dataset.MODALITY == 'VIDEO':
+                    if args.noise_name is not None and args.ratio:
+                        logger.info(f"Apply {args.noise_name}, noise ratio is {args.ratio}!")
                     model = infer_data_job_video(
                         model,
                         work_dir=pred_root,
                         model_name=model_name,
                         dataset=dataset,
                         result_file_name=result_file_base,
+                        noise_name=args.noise_name,
+                        ratio=args.ratio,
                         verbose=args.verbose,
                         api_nproc=args.api_nproc)
                 elif dataset.TYPE == 'MT':

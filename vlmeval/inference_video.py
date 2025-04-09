@@ -18,7 +18,7 @@ def parse_args():
 
 
 # Only API model is accepted
-def infer_data_api(model, work_dir, model_name, dataset, samples_dict={}, api_nproc=4):
+def infer_data_api(model, work_dir, model_name, dataset, noise_name=None, ratio=None, samples_dict={}, api_nproc=4):
     rank, world_size = get_rank_and_world_size()
     assert rank == 0 and world_size == 1
     dataset_name = dataset.dataset_name
@@ -39,7 +39,7 @@ def infer_data_api(model, work_dir, model_name, dataset, samples_dict={}, api_np
     indices = [i for i in indices if i not in res or res[i] == FAIL_MSG]
 
     gen_func = model.generate
-    structs = [dict(message=struct, dataset=dataset_name) for struct in structs]
+    structs = [dict(message=struct, noise_name=noise_name, ratio=ratio, dataset=dataset_name) for struct in structs]
 
     if len(structs):
         track_progress_rich(gen_func, structs, nproc=api_nproc, chunksize=api_nproc, save=out_file, keys=indices)
@@ -48,7 +48,7 @@ def infer_data_api(model, work_dir, model_name, dataset, samples_dict={}, api_np
     return res
 
 
-def infer_data(model, model_name, work_dir, dataset, out_file, verbose=False, api_nproc=4):
+def infer_data(model, model_name, work_dir, dataset, out_file, noise_name=None, ratio=None, verbose=False, api_nproc=4):
     res = load(out_file) if osp.exists(out_file) else {}
     rank, world_size = get_rank_and_world_size()
     dataset_name = dataset.dataset_name
@@ -72,6 +72,8 @@ def infer_data(model, model_name, work_dir, dataset, out_file, verbose=False, ap
             work_dir=work_dir,
             model_name=model_name,
             dataset=dataset,
+            noise_name=noise_name,
+            ratio=ratio,
             samples_dict={k: sample_map[k] for k in sample_indices_subrem},
             api_nproc=api_nproc)
         for k in sample_indices_subrem:
@@ -81,7 +83,7 @@ def infer_data(model, model_name, work_dir, dataset, out_file, verbose=False, ap
         return model
 
     assert not getattr(dataset, 'pack', False), 'Current model not supported pack mode!'
-    for i, idx in tqdm(enumerate(sample_indices_subrem)):
+    for i, idx in enumerate(tqdm(sample_indices_subrem)):
         if idx in res:
             continue
         if getattr(model, 'nframe', None) is not None and getattr(model, 'nframe', 0) > 0:
@@ -114,7 +116,7 @@ def infer_data(model, model_name, work_dir, dataset, out_file, verbose=False, ap
             struct = dataset.build_prompt(
                 sample_map[idx], video_llm=getattr(model, 'VIDEO_LLM', False)
             )
-        response = model.generate(message=struct, dataset=dataset_name)
+        response = model.generate(struct, noise_name, ratio, dataset=dataset_name)
         torch.cuda.empty_cache()
 
         if verbose:
@@ -136,6 +138,8 @@ def infer_data_job_video(
         model_name,
         dataset,
         result_file_name,
+        noise_name,
+        ratio,
         verbose=False,
         api_nproc=4):
 
@@ -155,6 +159,8 @@ def infer_data_job_video(
         work_dir=work_dir,
         dataset=dataset,
         out_file=out_file,
+        noise_name=noise_name,
+        ratio=ratio,
         verbose=verbose,
         api_nproc=api_nproc)
 

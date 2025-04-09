@@ -21,7 +21,7 @@ def build_judge(**kwargs):
             'gpt-4o': 'gpt-4o-2024-05-13',
             'gpt-4o-0806': 'gpt-4o-2024-08-06',
             'gpt-4o-mini': 'gpt-4o-mini-2024-07-18',
-            'qwen-7b': 'Qwen/Qwen2.5-7B-Instruct',
+            'qwen-7b': 'qwen2.5-7b-instruct',
             'qwen-72b': 'Qwen/Qwen2.5-72B-Instruct',
             'deepseek': 'deepseek-ai/DeepSeek-V2.5',
             'llama31-8b': 'meta-llama/Llama-3.1-8B-Instruct',
@@ -30,13 +30,13 @@ def build_judge(**kwargs):
     else:
         model_version = LOCAL_LLM
 
-    if model in ['qwen-7b', 'qwen-72b', 'deepseek']:
-        model = SiliconFlowAPI(model_version, **kwargs)
-    elif model == 'llama31-8b':
-        model = HFChatModel(model_version, **kwargs)
-    else:
-        model = OpenAIWrapper(model_version, **kwargs)
-    return model
+    # if model in ['qwen-7b', 'qwen-72b', 'deepseek']:
+    #     model = SiliconFlowAPI(model_version, **kwargs)
+    # elif model == 'llama31-8b':
+    #     model = HFChatModel(model_version, **kwargs)
+    # else:
+    #     model = OpenAIWrapper(model_version, **kwargs)
+    return OpenAIWrapper(model_version, **kwargs)
 
 
 DEBUG_MESSAGE = """

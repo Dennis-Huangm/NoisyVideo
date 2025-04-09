@@ -11,6 +11,7 @@ import torch
 from ..base import BaseModel
 from .prompt import Qwen2VLPromptMixin
 from ...smp import get_rank_and_world_size, get_gpu_memory, auto_split_flag, listinstr
+from video_noise.noise_applier import NoiseRegistry
 
 
 def ensure_image_url(image: str) -> str:
@@ -173,7 +174,7 @@ class Qwen2VLChat(Qwen2VLPromptMixin, BaseModel):
             content.append(item)
         return content
 
-    def generate_inner(self, message, dataset=None):
+    def generate_inner(self, message, noise_name=None, ratio=None, dataset=None):
         try:
             from qwen_vl_utils import process_vision_info
         except Exception as err:
@@ -189,6 +190,9 @@ class Qwen2VLChat(Qwen2VLPromptMixin, BaseModel):
 
         text = self.processor.apply_chat_template([messages], tokenize=False, add_generation_prompt=True)
         images, videos = process_vision_info([messages])
+        if noise_name is not None and ratio:
+            videos = NoiseRegistry.get_noise(noise_name)(videos[0], ratio).cpu()
+            
         inputs = self.processor(text=text, images=images, videos=videos, padding=True, return_tensors='pt')
         inputs = inputs.to('cuda')
 

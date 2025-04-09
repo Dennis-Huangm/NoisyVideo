@@ -44,7 +44,7 @@ class BaseAPI:
         self.default_kwargs = kwargs
 
     @abstractmethod
-    def generate_inner(self, inputs, **kwargs):
+    def generate_inner(self, inputs, noise_name=None, ratio=None, **kwargs):
         """The inner function to generate the answer.
 
         Returns:
@@ -213,7 +213,7 @@ class BaseAPI:
                 self.system_prompt += '\n' + system_prompt
         return new_message
 
-    def generate(self, message, **kwargs1):
+    def generate(self, message, noise_name=None, ratio=None, **kwargs1):
         """The main function to generate the answer. Will call `generate_inner` with the preprocessed input messages.
 
         Args:
@@ -242,7 +242,7 @@ class BaseAPI:
 
         for i in range(self.retry):
             try:
-                ret_code, answer, log = self.generate_inner(message, **kwargs)
+                ret_code, answer, log = self.generate_inner(message, noise_name, ratio, **kwargs)
                 if ret_code == 0 and self.fail_msg not in answer and answer != '':
                     if self.verbose:
                         print(answer)
