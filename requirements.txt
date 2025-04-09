@@ -1,5 +1,7 @@
+accelerate
 decord; platform_machine != 'arm64'
 eva-decord; platform_machine == 'arm64'
+flash-attn
 gradio
 huggingface_hub
 imageio
@@ -18,6 +20,7 @@ portalocker
 protobuf
 python-dotenv
 PyAV
+qwen-vl-utils[decord]==0.0.8
 requests
 rich
 scipy
