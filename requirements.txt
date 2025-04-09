@@ -3,8 +3,11 @@ eva-decord; platform_machine == 'arm64'
 gradio
 huggingface_hub
 imageio
+importlib_metadata
 matplotlib
+numba
 numpy
+noise
 omegaconf
 openai
 opencv-python>=4.4.0.46
@@ -14,10 +17,13 @@ pillow
 portalocker
 protobuf
 python-dotenv
+PyAV
 requests
 rich
+scipy
 sentencepiece
 setuptools
+scikit-image
 sty
 tabulate
 tiktoken
@@ -27,5 +33,6 @@ torchvision
 tqdm
 transformers
 typing_extensions
+ultralytics
 validators
 xlsxwriter

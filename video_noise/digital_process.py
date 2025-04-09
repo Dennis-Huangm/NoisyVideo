@@ -9,7 +9,7 @@ import cv2
 def add_random_pixel_noise(
     video: torch.Tensor,
     ratio: float,
-    probs: float = 0.2,  
+    probs: float = 0.8,  
     value_range: tuple = (0, 255)  # 噪声值范围
 ) -> torch.Tensor:
     video = video.to('cuda')
@@ -29,7 +29,7 @@ def add_random_pixel_noise(
 def add_resolution_noise(
     video: torch.Tensor,
     ratio: float,
-    scale_factor: float = 0.05,
+    scale_factor: float = 0.1,
 ) -> torch.Tensor:
     _, _, H, W = video.shape
     
@@ -59,7 +59,7 @@ def add_resolution_noise(
 def add_stretch_squish_noise(
     video: torch.Tensor,
     ratio: float, 
-    stretch_ratio : float = 1 / 100.0
+    stretch_ratio : float = 1 / 30.0
 ) -> torch.Tensor:
     direction = "horizontal" if torch.rand(1) > 0.5 else "vertical"
     _, _, H, W = video.shape
@@ -99,7 +99,7 @@ def add_canny_jagged(
     ratio: float,  
     low_threshold=50, 
     high_threshold=150, 
-    edge_dilate_size=3,    # 边缘膨胀核大小
+    edge_dilate_size=2,    # 边缘膨胀核大小
     surround_noise_ratio=0.3  # 周边像素扰动比例
 ) -> torch.Tensor:
     video = video.cpu()
