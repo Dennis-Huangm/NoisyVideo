@@ -6,6 +6,7 @@ python==3.9
 conda activate --name ${your_env_name} python==3.9
 cd VLMEvalKit
 pip install -e .
+pip install flash-attn --no-build-isolation
 ```
 ## Quick Start
  ### 1. 运行开源本地模型

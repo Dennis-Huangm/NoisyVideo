@@ -38,4 +38,3 @@ typing_extensions
 ultralytics
 validators
 xlsxwriter
-flash-attn
