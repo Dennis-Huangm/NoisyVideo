@@ -227,7 +227,7 @@ def add_color_shift_noise(
         else:
             color_factors = torch.empty(1, device=video.device).uniform_(1 - shift, 1 + shift)
         video[i] = torch.clamp(video[i] * color_factors, 0.0, 255.0)
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("flicker") # 闪烁效应
