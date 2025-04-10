@@ -207,7 +207,7 @@ def add_elastic_transform(video: torch.Tensor, ratio: float, severity: int = 5) 
             frame_tensor = torch.from_numpy(transformed_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(video.dtype)
+        video[i] = frame_tensor.to(device).to(torch.uint8)
     
     return video
 @NoiseRegistry.register("color_shift") # 色彩偏移

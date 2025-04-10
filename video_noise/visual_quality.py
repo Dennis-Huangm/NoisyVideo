@@ -12,7 +12,7 @@ def add_gaussian_noise(video: torch.Tensor, ratio, std=100) -> torch.Tensor:
     for i in noise_indice:
         noise = torch.randn_like(video[i], dtype=torch.float) * std
         noisy_frame = torch.clamp(video[i].float() + noise, 0.0, 255.0)
-        video[i] = noisy_frame.to(video.dtype)
+        video[i] = noisy_frame.to(torch.uint8)
     return video
 
 
@@ -188,7 +188,7 @@ def add_defocus_blur(video: torch.Tensor, ratio: float, severity: int = 5) -> to
             frame_tensor = torch.from_numpy(blurred_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(video.dtype)
+        video[i] = frame_tensor.to(device).to(torch.uint8)
     
     return video
 
@@ -335,7 +335,7 @@ def add_glass_blur(video: torch.Tensor, ratio: float, severity: int = 5) -> torc
             frame_tensor = torch.from_numpy(blurred_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(video.dtype)
+        video[i] = frame_tensor.to(device).to(torch.uint8)
     
     return video
 
@@ -430,7 +430,7 @@ def add_zoom_blur(video: torch.Tensor, ratio: float, severity: int = 5) -> torch
             frame_tensor = torch.from_numpy(blurred_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(video.dtype)
+        video[i] = frame_tensor.to(device).to(torch.uint8)
     
     return video
 @NoiseRegistry.register("jpeg_artifact")
