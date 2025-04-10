@@ -12,7 +12,6 @@ matplotlib
 moviepy==1.0.3
 numba
 numpy
-noise
 omegaconf
 openai
 opencv-python>=4.4.0.46
