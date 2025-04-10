@@ -58,7 +58,7 @@ def add_brightness_hsv(video: torch.Tensor, ratio, severity=5):
         
         video[i] = frame_tensor
     
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("contrast") # 对比度变换
@@ -77,7 +77,7 @@ def add_contrast_noise(
         if contrast_factor < 0:
             contrast_factor = -1 / contrast_factor
         video[i] = torch.clamp(contrast_factor * (video[i] - mean) + mean, 0.0, 255.0)
-    return video
+    return video.to(torch.uint8)
 
 @NoiseRegistry.register("elastic")
 def add_elastic_transform(video: torch.Tensor, ratio: float, severity: int = 5) -> torch.Tensor:
@@ -92,7 +92,6 @@ def add_elastic_transform(video: torch.Tensor, ratio: float, severity: int = 5) 
     import torch
     import numpy as np
     from scipy.ndimage.interpolation import map_coordinates
-    import cv2
     
     def gaussian_filter(image, sigma, mode='reflect', truncate=3.0):
         """
@@ -207,9 +206,11 @@ def add_elastic_transform(video: torch.Tensor, ratio: float, severity: int = 5) 
             frame_tensor = torch.from_numpy(transformed_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8)
+
+
 @NoiseRegistry.register("color_shift") # 色彩偏移
 def add_color_shift_noise(
     video: torch.Tensor,
@@ -236,7 +237,7 @@ def random_flicker(video: torch.Tensor, ratio=0.2):
         # 生成每帧亮度系数
         alphas = 1 + torch.randn(1, device=device) * ratio
         video[i] = torch.clamp(video[i] * alphas, 0.0, 255.0)
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("overexposure") # 过曝光
@@ -248,7 +249,7 @@ def add_over_exposure(video: torch.Tensor, ratio):
     ])
     for i in noise_indice:
         video[i] = transform(video[i])
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("underexposure") # 欠曝光
@@ -260,7 +261,7 @@ def add_under_exposure(video: torch.Tensor, ratio):
     ])
     for i in noise_indice:
         video[i] = transform(video[i])
-    return video
+    return video.to(torch.uint8)
 
 
 

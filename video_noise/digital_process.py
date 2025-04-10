@@ -22,7 +22,7 @@ def add_random_pixel_noise(
         min_val, max_val = value_range
         noise = torch.rand(C, H, W, device=device) * (max_val - min_val) + min_val
         video[i] = torch.where(mask.expand(C, -1, -1), noise, video[i].float())
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("resolution_degrade")  # 降低分辨率
@@ -52,7 +52,7 @@ def add_resolution_noise(
             mode='bicubic'
         )
         video[i] = torch.clamp(upsampled, 0.0, 255.0)
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("stretch_squish")  # 图像拉伸/压缩
@@ -90,7 +90,7 @@ def add_stretch_squish_noise(
         )
         video[i] = torch.clamp(output, 0.0, 255.0)
     
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("edge_sawtooth")  # 边缘锯齿
@@ -139,8 +139,8 @@ def add_canny_jagged(
             noisy_frames.append(frame)
     
     np_noisy = np.stack(noisy_frames, axis=0)  
-    tensor_noisy = torch.from_numpy(np_noisy).permute(0, 3, 1, 2).to(torch.uint8) 
-    return tensor_noisy
+    tensor_noisy = torch.from_numpy(np_noisy).permute(0, 3, 1, 2)
+    return tensor_noisy.to(torch.uint8)
 
 
 @NoiseRegistry.register("color_quantized")  # 色彩量化
@@ -157,4 +157,4 @@ def uniform_color_quantize_uint8(
         # 均匀量化公式
         quantized = torch.round(video[i].float() / step) * step
         video[i] = torch.clamp(quantized, 0.0, 255.0)
-    return video
+    return video.to(torch.uint8)

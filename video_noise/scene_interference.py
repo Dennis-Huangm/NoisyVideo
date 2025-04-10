@@ -146,9 +146,9 @@ def add_rain_fractal(video: torch.Tensor, ratio: float, severity: int = 5) -> to
             frame_tensor = torch.from_numpy(rainy_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8)
 # def add_rain(video: torch.Tensor, ratio: float) -> torch.Tensor:
 #     noise_indices = sample_noise_frame(video, ratio)
 #     device = video.device
@@ -266,9 +266,9 @@ def add_fog_fractal(video: torch.Tensor, ratio: float, severity: int = 5) -> tor
             frame_tensor = torch.from_numpy(frame_np).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8)
 # def add_rain(video: torch.Tensor, ratio: float) -> torch.Tensor:
 #     noise_indices = sample_noise_frame(video, ratio)
 #     device = video.device
@@ -442,9 +442,10 @@ def add_snow_effect(video: torch.Tensor, ratio: float, severity: int = 5) -> tor
             frame_tensor = torch.from_numpy(snowy_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8)
+
 
 @NoiseRegistry.register("frost")
 def add_frost_effect(video: torch.Tensor, ratio: float, severity: int = 5, frost_dir: str = 'video_noise/sample/') -> torch.Tensor:
@@ -608,9 +609,9 @@ def add_frost_effect(video: torch.Tensor, ratio: float, severity: int = 5, frost
             frame_tensor = torch.from_numpy(frosted_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8)
 
 
 
@@ -643,11 +644,9 @@ def add_specular_reflection(video: torch.Tensor, ratio: float) -> torch.Tensor:
         # 叠加Perlin噪声
         noise_layer = perlin_noise.to(frame.dtype) 
         frame = 0.9 * frame + 0.1 * noise_layer
-        frame = torch.clamp(frame, 0, 255) 
-        
-        video[i] = frame.to(torch.uint8) 
+        video[i] = torch.clamp(frame, 0, 255) 
 
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("shadow")  # 阴影
@@ -683,5 +682,5 @@ def add_shadow_noise(video: torch.Tensor, ratio: float) -> torch.Tensor:
             noisy_frames.append(frame)
     
     np_noisy = np.stack(noisy_frames, axis=0)  
-    tensor_noisy = torch.from_numpy(np_noisy).permute(0, 3, 1, 2).to(torch.uint8) 
-    return tensor_noisy
+    tensor_noisy = torch.from_numpy(np_noisy).permute(0, 3, 1, 2)
+    return tensor_noisy.to(torch.uint8) 

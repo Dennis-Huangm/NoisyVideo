@@ -11,9 +11,8 @@ def add_gaussian_noise(video: torch.Tensor, ratio, std=100) -> torch.Tensor:
     noise_indice = sample_noise_frame(video, ratio)
     for i in noise_indice:
         noise = torch.randn_like(video[i], dtype=torch.float) * std
-        noisy_frame = torch.clamp(video[i].float() + noise, 0.0, 255.0)
-        video[i] = noisy_frame.to(torch.uint8)
-    return video
+        video[i] = torch.clamp(video[i].float() + noise, 0.0, 255.0)
+    return video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("impulse") # 椒盐噪声
@@ -30,7 +29,7 @@ def add_impulse_noise(video: torch.Tensor, ratio: float, prob: float = 0.7) -> t
         video[i, :, black_mask] = 0.0    # 纯黑（所有通道置0）
         video[i, :, white_mask] = 255.0    # 纯白（所有通道置1）
 
-    return video
+    return video.to(torch.uint8) 
 
 @NoiseRegistry.register("speckle") # 斑点噪声
 def add_speckle_noise(
@@ -73,7 +72,7 @@ def add_speckle_noise(
         # 斑点噪声是乘性噪声: I_noisy = I * (1 + noise)
         video[i] = torch.clamp(video[i] * (1.0 + noise), 0.0, 255.0)
     
-    return video
+    return video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("poisson") # 泊松噪声
@@ -84,7 +83,7 @@ def add_poisson_noise(video: torch.Tensor, ratio, gain=0.01) -> torch.Tensor:
         scaled = video[i] * gain
         noisy_scaled = torch.poisson(scaled)
         video[i] = noisy_scaled / gain
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("gaussian_blur") # 高斯模糊
@@ -99,7 +98,7 @@ def add_gaussian_blur(video: torch.Tensor, ratio, kernel_size=101, sigma=20) -> 
     noise_indice = sample_noise_frame(video, ratio)
     for i in noise_indice:
         video[i] = torch.conv2d(video[i].unsqueeze(0).float(), kernel, padding=padding, groups=video[i].shape[-3])[0]
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("motion_blur") # 运动模糊
@@ -114,7 +113,7 @@ def add_motion_blur(video: torch.Tensor, ratio, kernel_size=101, angle=45) -> to
     noise_indice = sample_noise_frame(video, ratio)
     for i in noise_indice:
         video[i] = torch.conv2d(video[i].unsqueeze(0).float(), kernel, padding=padding, groups=video[i].shape[-3])[0]
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("defocus_blur")
@@ -188,9 +187,9 @@ def add_defocus_blur(video: torch.Tensor, ratio: float, severity: int = 5) -> to
             frame_tensor = torch.from_numpy(blurred_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("glass_blur")
@@ -335,9 +334,9 @@ def add_glass_blur(video: torch.Tensor, ratio: float, severity: int = 5) -> torc
             frame_tensor = torch.from_numpy(blurred_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("zoom_blur")
@@ -430,9 +429,11 @@ def add_zoom_blur(video: torch.Tensor, ratio: float, severity: int = 5) -> torch
             frame_tensor = torch.from_numpy(blurred_frame).permute(2, 0, 1)
         
         # 更新原视频
-        video[i] = frame_tensor.to(device).to(torch.uint8)
+        video[i] = frame_tensor.to(device)
     
-    return video
+    return video.to(torch.uint8)
+
+
 @NoiseRegistry.register("jpeg_artifact")
 def add_jpeg_noise(
     video: torch.Tensor,  # 输入形状 [T, C, H, W]
@@ -466,7 +467,9 @@ def add_jpeg_noise(
         compressed_tensor = torch.from_numpy(compressed_array).permute(2, 0, 1).to(video.device)
         video[i] = compressed_tensor
     
-    return video
+    return video.to(torch.uint8)
+
+    
 # def add_jpeg_noise(
 #     video: torch.Tensor,  # 输入形状 [T, C, H, W]
 #     ratio: float,

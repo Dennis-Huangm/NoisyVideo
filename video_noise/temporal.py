@@ -21,7 +21,7 @@ def add_frame_loss(video: torch.Tensor, ratio):
     if len(drop_indices) > 0:
         noisy_video[drop_indices] = 0 
     
-    return noisy_video
+    return noisy_video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("frame_replace") # 帧错序
@@ -39,7 +39,7 @@ def add_frame_replacement(video: torch.Tensor, ratio):
     noisy_video = video.clone().detach()
     noisy_video[replace_indices] = shuffled_frames
     
-    return noisy_video
+    return noisy_video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("frame_repeat") # 帧重复
@@ -53,7 +53,7 @@ def add_frame_repeat(video: torch.Tensor, ratio):
         if t not in repeat_indices:
             nearest = min(repeat_indices, key=lambda x: abs(x - t))
             noisy_video[t] = video[nearest]
-    return noisy_video
+    return noisy_video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("temporal_jitter") # 时序抖动
@@ -70,7 +70,7 @@ def add_temporal_jitter(video: torch.Tensor,
     else:
         noisy_video = add_frame_loss(noisy_video, drop_ratio)
         noisy_video = add_frame_replacement(noisy_video, replace_ratio)
-    return noisy_video
+    return noisy_video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("other_video") # 别的视频的帧
@@ -78,4 +78,4 @@ def add_other_video(video: torch.Tensor, ratio):
     noise_indice = sample_noise_frame(video, ratio)
     for i in noise_indice:
         video[i] = other_frames[i]
-    return video
+    return video.to(torch.uint8) 

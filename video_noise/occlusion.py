@@ -21,7 +21,7 @@ def add_random_block(video: torch.Tensor, ratio, min_ratio=0.3, max_ratio=0.7):
         y = torch.randint(0, H - h + 1, (1,), device=device).item()
         x = torch.randint(0, W - w + 1, (1,), device=device).item()
         video[i][:, y:y+h, x:x+w] = 0
-    return video
+    return video.to(torch.uint8)
 
 
 @NoiseRegistry.register("target_block") # 主要目标遮挡
@@ -44,6 +44,6 @@ def add_target_block(video: torch.Tensor, ratio):
             if boxes.numel() != 0:
                 x1, y1, x2, y2 = boxes.int()[0].tolist()
                 video[i][:, y1:y2, x1:x2] = 0
-    return video
+    return video.to(torch.uint8)
 
 
