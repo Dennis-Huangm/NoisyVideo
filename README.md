@@ -13,12 +13,12 @@ pip install flash-attn --no-build-isolation
 ```bash
 torchrun \
 	--nproc-per-node=${NUM_GPUS}  \
+	run.py \
 	--data MMBench_Video_${NUM_FRAMES}frame_nopack \
 	--model ${MODEL} \
 	--judge gpt-4o \
 	--noise_name ${NOISE_TYPE} \
-	--ratio ${NOISE_PROPORTION} \
-	run.py
+	--ratio ${NOISE_PROPORTION}
 ```
  -  --data是选择的数据集，具体可选的数据集位于vlmeval/dataset/video_dataset_config.py中，目前只考虑运行MMBench_Video_8frame_nopack与MMBench_Video_16frame_nopack，优先8帧。
  - --model是我们用来推理的模型，可选的模型位于vlmeval/config.py中，我们应该是先尝试Qwen2.5-VL-3B-Instruct。
