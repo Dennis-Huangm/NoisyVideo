@@ -196,3 +196,6 @@ assets/LOGO.png
 api_list.txt
 vlmeval/gemini_tmp.py
 sample.png
+
+# Jankin
+!libs/*
