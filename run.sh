@@ -22,7 +22,6 @@ models=(
     Video-ChatGPT
     PLLaVA-7B
     PLLaVA-13B
-    PLLaVA-34B
 )
 
 # 设置GPU数量（根据实际情况修改）

@@ -147,7 +147,6 @@ class Chatunivi(BaseModel):
             video, video_processor, max_frames=MAX_IMAGE_LENGTH,
             image_resolution=self.resolution, video_framerate=self.fps
         )
-        print(video_frames.shape)
 
         if noise_name is not None and ratio:
             video_frames = NoiseRegistry.get_noise(noise_name)(video_frames, ratio).cpu()
