@@ -10,6 +10,7 @@ from ...smp import isimg, listinstr
 from ...dataset import DATASET_TYPE
 from decord import VideoReader, cpu
 from PIL import Image
+from video_noise import NoiseRegistry
 
 
 def _get_rawvideo_dec(
@@ -108,12 +109,14 @@ class Chatunivi(BaseModel):
         self.processor = image_processor
         self.context_len = context_len
         self.kwargs = kwargs
+        self.nframe = 8
         self.fps = 1
         self.resolution = 224
         if 'v1.5' in model_path:
             self.resolution = 336
 
-    def get_model_output(self, model, video_processor, tokenizer, video, qs):
+    def get_model_output(self, model, video_processor, tokenizer, video, qs, noise_name=None, ratio=None):
+        self.fps = 1
         from ChatUniVi.conversation import conv_templates, SeparatorStyle
         from ChatUniVi.constants import (
             DEFAULT_IMAGE_PATCH_TOKEN,
@@ -144,6 +147,10 @@ class Chatunivi(BaseModel):
             video, video_processor, max_frames=MAX_IMAGE_LENGTH,
             image_resolution=self.resolution, video_framerate=self.fps
         )
+        print(video_frames.shape)
+
+        if noise_name is not None and ratio:
+            video_frames = NoiseRegistry.get_noise(noise_name)(video_frames, ratio).cpu()
 
         if model.config.mm_use_im_start_end:
             qs = DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN * slice_len + DEFAULT_IM_END_TOKEN + '\n' + qs
@@ -198,10 +205,10 @@ class Chatunivi(BaseModel):
         outputs = outputs.strip()
         return outputs
 
-    def generate_inner(self, message, dataset=None):
+    def generate_inner(self, message, noise_name=None, ratio=None, dataset=None):
         if listinstr(['MLVU', 'MVBench'], dataset):
             question, video = self.message_to_promptvideo_withrole(message, dataset)
         else:
             question, video = self.message_to_promptvideo(message)
-        response = self.get_model_output(self.model, self.processor, self.tokenizer, video, question)
+        response = self.get_model_output(self.model, self.processor, self.tokenizer, video, question, noise_name, ratio)
         return response

@@ -24,20 +24,22 @@ def compare(ori_video, noi_video):
     print(f"PSNR: {psnr_score / nframe:.2f} dB")
 
 
-video_path = "video_noise/sample/other_video.mp4"
-video_frames, _, info = torchvision.io.read_video(
-    video_path,
-    pts_unit="sec",
-    output_format="TCHW",
-)
-print(video_frames.shape)
+# video_path = "video_noise/sample/other_video.mp4"
+# video_frames, _, info = torchvision.io.read_video(
+#     video_path,
+#     pts_unit="sec",
+#     output_format="TCHW",
+# )
+# print(video_frames.shape)
 
-start = time.perf_counter()  # 性能计数器
-print(NoiseRegistry.list_noises())
-video = NoiseRegistry.get_noise("color_quantized")(video_frames.clone(), 1)
-end = time.perf_counter()
-print(f"高精度计时: {end - start:.8f} 秒")
-save_image(video[0])
-compare(video_frames, video)
+# start = time.perf_counter()  # 性能计数器
+# print(NoiseRegistry.list_noises())
+# video = NoiseRegistry.get_noise("color_quantized")(video_frames.clone(), 1)
+# end = time.perf_counter()
+# print(f"高精度计时: {end - start:.8f} 秒")
+# save_image(video[0])
+# compare(video_frames, video)
+import sys
+print(sys.path)
 
 

@@ -12,11 +12,22 @@ from decord import VideoReader, cpu
 from huggingface_hub import snapshot_download
 
 
-def load_video(video_path, setting_fps):
+# def load_video(video_path, setting_fps):
+#     vr = VideoReader(video_path, ctx=cpu(0))
+#     total_frame_num = len(vr)
+#     fps = round(vr.get_avg_fps())
+#     frame_idx = [i for i in range(0, total_frame_num, int(fps / setting_fps))]
+#     spare_frames = vr.get_batch(frame_idx).asnumpy()
+#     return spare_frames
+
+def load_video(video_path, nframe):
     vr = VideoReader(video_path, ctx=cpu(0))
     total_frame_num = len(vr)
-    fps = round(vr.get_avg_fps())
-    frame_idx = [i for i in range(0, total_frame_num, int(fps / setting_fps))]
+    
+    # 生成8个均匀分布的帧索引
+    frame_indices = np.linspace(0, total_frame_num-1, num=nframe, dtype=int)
+    frame_idx = frame_indices.tolist()
+    
     spare_frames = vr.get_batch(frame_idx).asnumpy()
     return spare_frames
 
@@ -64,6 +75,7 @@ class LLaMAVID(BaseModel):
         self.context_len = context_len
         self.kwargs = kwargs
         self.fps = 1
+        self.nframe = 8
 
     def get_model_output(self, model, video_processor, tokenizer, video, qs):
         from llamavid.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN
@@ -98,7 +110,7 @@ class LLaMAVID(BaseModel):
 
         # Check if the video exists
         if os.path.exists(video):
-            video = load_video(video, self.fps)
+            video = load_video(video, self.nframe)
             video = video_processor.preprocess(video, return_tensors='pt')['pixel_values'].half().cuda()
             video = [video]
 

@@ -7,6 +7,7 @@ import logging
 from ..base import BaseModel
 from ...smp import isimg, listinstr
 from ...dataset import DATASET_TYPE
+from video_noise import NoiseRegistry
 
 
 def read_video_pyav(container, indices):
@@ -47,7 +48,7 @@ class VideoLLaVA_HF(BaseModel):
         self.nframe = 8
         torch.cuda.empty_cache()
 
-    def generate_inner(self, message, dataset=None):
+    def generate_inner(self, message, noise_name=None, ratio=None, dataset=None):
         import av
         if self.nframe != 8:
             raise Exception(f'Video-LLaVA only supported 8 frames to generate, you now set frame numbers to {self.nframe}')  # noqa
@@ -59,6 +60,11 @@ class VideoLLaVA_HF(BaseModel):
         total_frames = container.streams.video[0].frames
         indices = np.arange(0, total_frames, total_frames / self.nframe).astype(int)
         clip = read_video_pyav(container, indices)
+
+        torch_clip = torch.from_numpy(clip).permute(0, 3, 1, 2)
+        if noise_name is not None and ratio:
+            torch_clip = NoiseRegistry.get_noise(noise_name)(torch_clip, ratio).cpu()
+        clip = torch_clip.permute(0, 2, 3, 1).numpy()
 
         prompt = f'USER: <video>\n{question} ASSISTANT:'
         inputs = self.processor(text=prompt, videos=clip, return_tensors='pt').to(self.model.device)

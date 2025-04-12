@@ -43,7 +43,7 @@ class VideoChatGPT(BaseModel):
         self.kwargs = kwargs
         self.vision_tower = vision_tower
 
-    def get_model_output(self, model, video_processor, tokenizer, video, qs):
+    def get_model_output(self, model, video_processor, tokenizer, video, qs, noise_name, ratio):
         from video_chatgpt.eval.model_utils import load_video
         from video_chatgpt.inference import video_chatgpt_infer
         conv_mode = 'video-chatgpt_v1'
@@ -59,10 +59,11 @@ class VideoChatGPT(BaseModel):
             tokenizer,
             video_processor,
             self.context_len,
+            noise_name, ratio
         )
         return output
 
-    def generate_inner(self, message, dataset=None):
+    def generate_inner(self, message, noise_name=None, ratio=None, dataset=None):
         question, video = self.message_to_promptvideo(message)
-        response = self.get_model_output(self.model, self.processor, self.tokenizer, video, question)
+        response = self.get_model_output(self.model, self.processor, self.tokenizer, video, question, noise_name, ratio)
         return response

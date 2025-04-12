@@ -17,6 +17,7 @@ from torchvision import transforms
 from ..base import BaseModel
 from ...smp import *
 from ...dataset import DATASET_TYPE
+from video_noise import NoiseRegistry
 
 
 def get_prompt(conv):
@@ -146,7 +147,7 @@ class VideoChat2_HD(BaseModel):
         self.model = model
 
         #  position embedding
-        self.nframe = 16
+        self.nframe = 8
         self.resolution = 224
         self.hd_num = 6
         new_pos_emb = self.get_sinusoid_encoding_table(
@@ -227,7 +228,7 @@ class VideoChat2_HD(BaseModel):
         ])
         return frame_indices
 
-    def read_video(self, video_path, bound=None):
+    def read_video(self, video_path, noise_name=None, ratio=None, bound=None):
         from decord import VideoReader, cpu
         vr = VideoReader(video_path, ctx=cpu(0), num_threads=1)
         max_frame = len(vr) - 1
@@ -236,6 +237,9 @@ class VideoChat2_HD(BaseModel):
 
         frames = vr.get_batch(frame_indices)
         frames = frames.permute(0, 3, 1, 2)
+
+        if noise_name is not None and ratio:
+            frames = NoiseRegistry.get_noise(noise_name)(frames, ratio).cpu()
         frames = self.hd_transform(frames.float(), image_size=self.resolution, hd_num=self.hd_num)
         torch_imgs = self.transform(frames)
         return torch_imgs
@@ -378,10 +382,10 @@ class VideoChat2_HD(BaseModel):
         else:
             return ''
 
-    def generate_inner(self, message, dataset=None):
+    def generate_inner(self, message, noise_name=None, ratio=None, dataset=None):
         if dataset == 'Video-MME':
             _, video = self.message_to_promptvideo(message)
-            torch_imgs = self.read_video(video)
+            torch_imgs = self.read_video(video, noise_name, ratio)
             subtitle = self.split_subtitle(message[-2]['value'])
             question = self.qa_template(message[-1]['value'])
             example = {
@@ -402,7 +406,7 @@ class VideoChat2_HD(BaseModel):
             return return_message
         elif listinstr(['MLVU', 'MVBench', 'TempCompass'], dataset):
             question, video = self.message_to_promptvideo_withrole(message, dataset)
-            torch_imgs = self.read_video(video)
+            torch_imgs = self.read_video(video, noise_name, ratio)
             example = {
                 'subtitle': '',
                 'video': torch_imgs,
@@ -424,7 +428,8 @@ class VideoChat2_HD(BaseModel):
             return return_message
         else:
             question, video = self.message_to_promptvideo(message)
-            torch_imgs = self.read_video(video)
+            torch_imgs = self.read_video(video, noise_name, ratio)
+            print
             example = {
                 'subtitle': '',
                 'video': torch_imgs,

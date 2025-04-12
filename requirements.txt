@@ -9,6 +9,7 @@ huggingface_hub
 imageio
 importlib_metadata
 matplotlib
+moviepy==1.0.3
 numba
 numpy
 noise
