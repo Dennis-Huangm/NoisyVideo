@@ -20,6 +20,7 @@ torchrun \
 	--judge gpt-4o \
 	--noise_name ${NOISE_TYPE} \
 	--ratio ${NOISE_PROPORTION}
+如：torchrun --nproc-per-node=2 run.py --data MMBench_Video_8frame_nopack --model Chat-UniVi-7B --judge qwen-7b --noise_name impulse --ratio 0.9
 ```
  -  --data是选择的数据集，具体可选的数据集位于vlmeval/dataset/video_dataset_config.py中，目前只考虑运行MMBench_Video_8frame_nopack与MMBench_Video_16frame_nopack，优先8帧。
  - --model是我们用来推理的模型，可选的模型位于vlmeval/config.py中，我们应该是先尝试Qwen2.5-VL-3B-Instruct。
