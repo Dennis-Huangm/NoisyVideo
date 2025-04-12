@@ -8,6 +8,7 @@ cd VLMEvalKit
 pip install -e .
 pip install flash-attn --no-build-isolation
 ```
+部分模型无法直接通过transformers调用，需要自己安装源码。其中Chat-UniVi、LLaMA-VID、LLaVA需要执行pip install -e .来安装。
 ## Quick Start
  ### 1. 运行开源本地模型
 ```bash
