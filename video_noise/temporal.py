@@ -6,10 +6,8 @@ import torchvision
 
 other_frames, _, info = torchvision.io.read_video(
     'video_noise/sample/other_video.mp4',
-    start_pts=0,
-    end_pts=1,
     pts_unit="sec",
-    output_format="TCHW",
+    output_format="TCHW"
 )
 
 
@@ -77,5 +75,6 @@ def add_temporal_jitter(video: torch.Tensor,
 def add_other_video(video: torch.Tensor, ratio):
     noise_indice = sample_noise_frame(video, ratio)
     for i in noise_indice:
-        video[i] = other_frames[i]
+        if i < 32:
+            video[i] = other_frames[i]
     return video.to(torch.uint8) 

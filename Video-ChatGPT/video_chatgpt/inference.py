@@ -80,7 +80,6 @@ def video_chatgpt_infer(video_frames, question, conv_mode, model, vision_tower, 
 
     # Preprocess video frames and get image tensor
     image_tensor = image_processor.preprocess(video_frames, return_tensors='pt')['pixel_values']
-    print(image_tensor.shape)
     if noise_name is not None and ratio:
             image_tensor = NoiseRegistry.get_noise(noise_name)(image_tensor, ratio).cpu()
 

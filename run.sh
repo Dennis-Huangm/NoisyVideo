@@ -15,7 +15,7 @@ noise_names=(
 # 定义模型数组（共9个）
 models=(
     Video-LLaVA-7B-HF
-    VideoChat2_HD
+    VideoChat2-HD
     Chat-UniVi-7B
     Chat-UniVi-7B-v1.5
     # LLaMA-VID-7B
@@ -31,7 +31,7 @@ NUM_GPUS=2
 for noise in "${noise_names[@]}"; do
     for model in "${models[@]}"; do
         echo "------------------------------------------------------"
-        echo "[$(date)] 开始执行组合：噪声类型=$noise | 模型=$model"
+        echo "[$(date)] 开始执行组合：噪声类型->$noise | 模型->$model"
         
         # 执行核心命令
         torchrun \
