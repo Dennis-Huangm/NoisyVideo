@@ -3,7 +3,7 @@
 ## Installation
 python==3.9
 ```bash
-conda activate --name ${your_env_name} python==3.9
+conda create --name ${your_env_name} python==3.9
 cd VLMEvalKit
 pip install -e .
 pip install flash-attn --no-build-isolation
