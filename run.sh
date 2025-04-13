@@ -28,8 +28,8 @@ models=(
 NUM_GPUS=2
 
 # 循环执行所有组合
-for noise in "${noise_names[@]}"; do
-    for model in "${models[@]}"; do
+for model in "${models[@]}"; do
+    for noise in "${noise_names[@]}"; do
         echo "------------------------------------------------------"
         echo "[$(date)] 开始执行组合：噪声类型->$noise | 模型->$model"
         
