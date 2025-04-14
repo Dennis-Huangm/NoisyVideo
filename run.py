@@ -426,15 +426,15 @@ def main():
                         proxy_set(old_proxy)
 
                     # Create the symbolic links for the prediction files
-                    files = os.listdir(pred_root)
-                    files = [x for x in files if (f'{model_name}_{dataset_name}' in x or "status.json" in x)]
-                    for f in files:
-                        cwd = os.getcwd()
-                        file_addr = osp.join(cwd, pred_root, f)
-                        link_addr = osp.join(cwd, pred_root_meta, f)
-                        if osp.exists(link_addr) or osp.islink(link_addr):
-                            os.remove(link_addr)
-                        os.symlink(file_addr, link_addr)
+                    # files = os.listdir(pred_root)
+                    # files = [x for x in files if (f'{model_name}_{dataset_name}' in x or "status.json" in x)]
+                    # for f in files:
+                    #     cwd = os.getcwd()
+                    #     file_addr = osp.join(cwd, pred_root, f)
+                    #     link_addr = osp.join(cwd, pred_root_meta, f)
+                    #     if osp.exists(link_addr) or osp.islink(link_addr):
+                    #         os.remove(link_addr)
+                    #     os.symlink(file_addr, link_addr)
 
             except Exception as e:
                 logger.exception(f'Model {model_name} x Dataset {dataset_name} combination failed: {e}, '
