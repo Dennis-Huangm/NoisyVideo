@@ -25,7 +25,7 @@ torchrun \
  -  --data是选择的数据集，具体可选的数据集位于vlmeval/dataset/video_dataset_config.py中，目前只考虑运行MMBench_Video_8frame_nopack与MMBench_Video_16frame_nopack，优先8帧。
  - --model是我们用来推理的模型，可选的模型位于vlmeval/config.py中，我们应该是先尝试Qwen2.5-VL-3B-Instruct。
  - --judge是用来评估结果的模型，我们这里统一采用gpt-4o。
- - --noise_name是我们使用的噪音，共有35种噪音：['gaussian', 'impulse', 'speckle', 'poisson', 'gaussian_blur', 'motion_blur', 'defocus_blur', 'glass_blur', 'zoom_blur', 'jpeg_artifact', 'random_block', 'target_block', 'frame_drop', 'frame_replace', 'frame_repeat', 'temporal_jitter', 'other_video', 'bright_transform', 'contrast', 'elastic', 'color_shift', 'flicker', 'overexposure', 'underexposure', 'rainy', 'foggy', 'snow', 'frost', 'reflect', 'shadow', 'random_pixel', 'resolution_degrade', 'stretch_squish', 'edge_sawtooth', 'color_quantized']。
+ - --noise_name是我们使用的噪音，共有36种噪音：['gaussian', 'impulse', 'speckle', 'poisson', 'gaussian_blur', 'motion_blur', 'defocus_blur', 'glass_blur', 'zoom_blur', 'jpeg_artifact', 'random_block', 'target_block', 'frame_drop', 'frame_replace', 'frame_repeat', 'temporal_jitter', 'bit_error', 'h265_artifacts', 'bright_transform', 'contrast', 'color_shift', 'flicker', 'overexposure', 'underexposure', 'rainy', 'foggy', 'snow', 'frost', 'reflect', 'shadow', 'elastic', 'random_pixel', 'resolution_degrade', 'stretch_squish', 'edge_sawtooth', 'color_quantized']。
  - --ratio是噪音帧在整个视频中的占比，有三个比例：[0.3, 0.6, 0.9]。优先测试0.9吧……
 
  ### 2. 运行闭源api模型
