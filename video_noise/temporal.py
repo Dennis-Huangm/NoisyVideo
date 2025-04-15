@@ -8,8 +8,8 @@ import numpy as np
 import cv2
 import tempfile
 import os
-import subprocess
-from typing import Optional, Union, Dict, Any
+from typing import Optional, Union
+import sys
 
 other_frames, _, info = torchvision.io.read_video(
     'video_noise/sample/other_video.mp4',
@@ -85,6 +85,8 @@ def add_other_video(video: torch.Tensor, ratio):
         if i < 32:
             video[i] = other_frames[i]
     return video.to(torch.uint8) 
+
+
 @NoiseRegistry.register("bit_error")
 def add_bit_error(video: torch.Tensor, ratio: float, severity: str = "medium") -> torch.Tensor:
     """
@@ -135,8 +137,6 @@ def add_bit_error(video: torch.Tensor, ratio: float, severity: str = "medium") -
         frame[:, start_h:start_h + region_height, start_w:start_w + region_width] = region
 
     return video_out.to(torch.uint8) 
-
-
 
 
 # 首先定义一个自动安装并获取FFmpeg的函数
