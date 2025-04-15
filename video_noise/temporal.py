@@ -78,13 +78,13 @@ def add_temporal_jitter(video: torch.Tensor,
     return noisy_video.to(torch.uint8) 
 
 
-@NoiseRegistry.register("other_video") # 别的视频的帧
-def add_other_video(video: torch.Tensor, ratio):
-    noise_indice = sample_noise_frame(video, ratio)
-    for i in noise_indice:
-        if i < 32:
-            video[i] = other_frames[i]
-    return video.to(torch.uint8) 
+# @NoiseRegistry.register("other_video") # 别的视频的帧
+# def add_other_video(video: torch.Tensor, ratio):
+#     noise_indice = sample_noise_frame(video, ratio)
+#     for i in noise_indice:
+#         if i < 32:
+#             video[i] = other_frames[i]
+#     return video.to(torch.uint8) 
 
 
 @NoiseRegistry.register("bit_error")

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# 定义噪声类型数组（共35种）
+# 定义噪声类型数组（共36种）
 noise_names=(
     gaussian impulse speckle poisson
     gaussian_blur motion_blur defocus_blur glass_blur zoom_blur
     jpeg_artifact random_block target_block
-    frame_drop frame_replace frame_repeat temporal_jitter other_video
+    frame_drop frame_replace frame_repeat temporal_jitter bit_error h265_artifacts
     bright_transform contrast elastic color_shift flicker
     overexposure underexposure rainy foggy snow frost
     reflect shadow random_pixel resolution_degrade
