@@ -41,4 +41,4 @@ typing_extensions
 ultralytics
 validators
 xlsxwriter
-ffmpeg-python==4.2.2
+ffmpeg-python
