@@ -8,7 +8,7 @@ noise_names=(
     frame_drop frame_replace frame_repeat temporal_jitter bit_error h265_artifacts
     bright_transform contrast elastic color_shift flicker
     overexposure underexposure rainy foggy snow frost
-    reflect shadow random_pixel resolution_degrade
+    reflect shadow rolling_shutter resolution_degrade
     stretch_squish edge_sawtooth color_quantized
 )
 

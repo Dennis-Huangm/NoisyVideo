@@ -2,20 +2,7 @@
 # -*- coding: utf-8 -*-
 from .noise_applier import NoiseRegistry
 from .utils import *
-import torchvision
 import torch
-import numpy as np
-import cv2
-import tempfile
-import os
-from typing import Optional, Union
-import sys
-
-other_frames, _, info = torchvision.io.read_video(
-    'video_noise/sample/other_video.mp4',
-    pts_unit="sec",
-    output_format="TCHW"
-)
 
 
 @NoiseRegistry.register("frame_drop") # 帧丢失
@@ -76,14 +63,3 @@ def add_temporal_jitter(video: torch.Tensor,
         noisy_video = add_frame_loss(noisy_video, drop_ratio)
         noisy_video = add_frame_replacement(noisy_video, replace_ratio)
     return noisy_video.to(torch.uint8) 
-
-
-# @NoiseRegistry.register("other_video") # 别的视频的帧
-# def add_other_video(video: torch.Tensor, ratio):
-#     noise_indice = sample_noise_frame(video, ratio)
-#     for i in noise_indice:
-#         if i < 32:
-#             video[i] = other_frames[i]
-#     return video.to(torch.uint8) 
-
-

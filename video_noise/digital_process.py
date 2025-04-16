@@ -89,6 +89,8 @@ def add_rolling_shutter(
         result_video[t_idx] = output_frame
     
     return result_video.to(torch.uint8)
+
+
 @NoiseRegistry.register("resolution_degrade")  # 降低分辨率
 def add_resolution_noise(
     video: torch.Tensor,
