@@ -8,15 +8,6 @@ import numpy as np
 import skimage.color as sk_color
 
 @NoiseRegistry.register("bright_transform") # 亮度变换
-# def add_brightness_tf(video: torch.Tensor, ratio):
-    # noise_indice = sample_noise_frame(video, ratio)
-    # transform = transforms.Compose([
-    #     lambda x: global_brightness_shift(x, (-0.3, 0.3)),
-    #     lambda x: gamma_correction(x, (0.6, 1.4))
-    # ])
-    # for i in noise_indice:
-    #     video[i] = transform(video[i])
-    # return video
 def add_brightness_hsv(video: torch.Tensor, ratio, severity=5):
     """
     使用HSV颜色空间调整视频亮度，类似第二个brightness函数，
@@ -78,7 +69,6 @@ def add_contrast_noise(
             contrast_factor = -1 / contrast_factor
         video[i] = torch.clamp(contrast_factor * (video[i] - mean) + mean, 0.0, 255.0)
     return video.to(torch.uint8)
-
 
 
 

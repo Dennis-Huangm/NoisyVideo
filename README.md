@@ -1,5 +1,11 @@
 # NRVL(Towards Noise-Robust Video Understanding with LLMs)
 
+## Update list
+
+与最初的版本相比，在noise方面 我们删去了other_video和random_pixel
+添加了bit_error, H.265, rolling_shutter。现在一共36个Noise.
+
+
 ## Installation
 python==3.9
 ```bash

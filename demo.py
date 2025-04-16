@@ -35,10 +35,10 @@ print(video_frames.shape)
 start = time.perf_counter()  # 性能计数器
 print(NoiseRegistry.list_noises())
 # video = NoiseRegistry.get_noise("color_quantized")(video_frames.clone(), 1)
-video = NoiseRegistry.get_noise("elastic")(video_frames.clone(), 1)
+video = NoiseRegistry.get_noise("bit_error")(video_frames.clone(), 1)
 end = time.perf_counter()
 print(f"高精度计时: {end - start:.8f} 秒")
-save_image(video[0])
+save_image(video[3])
 compare(video_frames, video)
 import sys
 print(sys.path)
