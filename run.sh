@@ -30,17 +30,26 @@ NUM_GPUS=2
 # 循环执行所有组合
 for model in "${models[@]}"; do
     for noise in "${noise_names[@]}"; do
+        output_dir="outputs/${model}/${noise}"
+        
+        # 检查是否已存在JSON文件
+        if [[ -d "${output_dir}" ]] && find "${output_dir}" -maxdepth 1 -type f -name "*.json" | read; then
+            echo "------------------------------------------------------"
+            echo "[$(date)] 跳过组合：噪声类型->${noise} | 模型->${model}，输出文件已存在"
+            continue
+        fi
+
         echo "------------------------------------------------------"
-        echo "[$(date)] 开始执行组合：噪声类型->$noise | 模型->$model"
+        echo "[$(date)] 开始执行组合：噪声类型->${noise} | 模型->${model}"
         
         # 执行核心命令
         torchrun \
-            --nproc-per-node=$NUM_GPUS \
+            --nproc-per-node=${NUM_GPUS} \
             run.py \
             --data MMBench_Video_8frame_nopack \
-            --model "$model" \
+            --model "${model}" \
             --judge gpt-4o \
-            --noise_name "$noise" \
+            --noise_name "${noise}" \
             --ratio 0.9
             
         echo "[$(date)] 执行完成，等待60秒..."
