@@ -14,8 +14,8 @@ noise_names=(
 
 # 定义模型数组（共9个）
 models=(
-    Video-LLaVA-7B-HF
-    VideoChat2-HD
+    # Video-LLaVA-7B-HF
+    # VideoChat2-HD
     Chat-UniVi-7B
     Chat-UniVi-7B-v1.5
     # LLaMA-VID-7B
