@@ -35,7 +35,7 @@ print(video_frames.shape)
 start = time.perf_counter()  # 性能计数器
 print(NoiseRegistry.list_noises())
 # video = NoiseRegistry.get_noise("color_quantized")(video_frames.clone(), 1)
-video = NoiseRegistry.get_noise("gaussian")(video_frames.clone(), 1)
+video = NoiseRegistry.get_noise("resolution_degrade")(video_frames.clone(), 1)
 end = time.perf_counter()
 print(f"高精度计时: {end - start:.8f} 秒")
 save_image(video[3])

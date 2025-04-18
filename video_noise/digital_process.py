@@ -3,8 +3,7 @@
 from .noise_applier import NoiseRegistry
 from .utils import *
 import cv2
-from torchvision.transforms import functional as F
-from torchvision.io import read_image
+
 
 @NoiseRegistry.register("rolling_shutter") # 像素值随机变化
 def add_rolling_shutter(
