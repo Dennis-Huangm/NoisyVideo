@@ -6,6 +6,9 @@ import torchvision
 from video_noise.noise_applier import NoiseRegistry
 from video_noise.utils import save_image
 import time
+from tqdm import tqdm
+import torch
+import os
 
 
 def compare(ori_video, noi_video):
@@ -24,7 +27,20 @@ def compare(ori_video, noi_video):
     print(f"PSNR: {psnr_score / nframe:.2f} dB")
 
 
-video_path = "video_noise/sample/other_video.mp4"
+
+def save_as_video(tensor: torch.Tensor, save_path: str, fps: int = 30):
+    # 3. 调整维度顺序为 (T, H, W, C)
+    tensor = tensor.permute(0, 2, 3, 1)
+    
+    # 4. 写入视频
+    torchvision.io.write_video(
+        filename=save_path,
+        video_array=tensor,
+        fps=fps,
+        video_codec="mpeg4"
+    )
+
+video_path = '0R51Ee5SGv0.mp4'
 video_frames, _, info = torchvision.io.read_video(
     video_path,
     pts_unit="sec",
@@ -33,12 +49,16 @@ video_frames, _, info = torchvision.io.read_video(
 print(video_frames.shape)
 
 start = time.perf_counter()  # 性能计数器
-print(NoiseRegistry.list_noises())
-# video = NoiseRegistry.get_noise("color_quantized")(video_frames.clone(), 1)
-video = NoiseRegistry.get_noise("resolution_degrade")(video_frames.clone(), 1)
+noises = NoiseRegistry.list_noises()
+for noise in tqdm(noises):
+    if os.path.exists(f"outputs_video/{noise}_output.mp4"):
+        continue
+    video = NoiseRegistry.get_noise(noise)(video_frames.clone(), 1)
+    save_as_video(video, f"outputs_video/{noise}_output.mp4", fps=int(info["video_fps"]))
 end = time.perf_counter()
 print(f"高精度计时: {end - start:.8f} 秒")
-save_image(video[3])
+# save_image(video[0])
 # compare(video_frames, video)
+
 
 
