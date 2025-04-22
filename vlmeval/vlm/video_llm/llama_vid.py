@@ -10,6 +10,7 @@ from ...smp import isimg, listinstr, load, dump, download_file
 from ...dataset import DATASET_TYPE
 from decord import VideoReader, cpu
 from huggingface_hub import snapshot_download
+from video_noise import NoiseRegistry
 
 
 # def load_video(video_path, setting_fps):
@@ -20,7 +21,7 @@ from huggingface_hub import snapshot_download
 #     spare_frames = vr.get_batch(frame_idx).asnumpy()
 #     return spare_frames
 
-def load_video(video_path, nframe):
+def load_video(video_path, nframe, noise_name=None, ratio=None):
     vr = VideoReader(video_path, ctx=cpu(0))
     total_frame_num = len(vr)
     
@@ -28,7 +29,9 @@ def load_video(video_path, nframe):
     frame_indices = np.linspace(0, total_frame_num-1, num=nframe, dtype=int)
     frame_idx = frame_indices.tolist()
     
-    spare_frames = vr.get_batch(frame_idx).asnumpy()
+    spare_frames = vr.get_batch(frame_idx).permute(0, 3, 1, 2)
+    if noise_name is not None and ratio:
+        spare_frames = NoiseRegistry.get_noise(noise_name)(spare_frames, ratio).cpu()
     return spare_frames
 
 
@@ -77,7 +80,7 @@ class LLaMAVID(BaseModel):
         self.fps = 1
         self.nframe = 8
 
-    def get_model_output(self, model, video_processor, tokenizer, video, qs):
+    def get_model_output(self, model, video_processor, tokenizer, video, qs, noise_name=None, ratio=None):
         from llamavid.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN
         from llamavid.constants import DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
         from llamavid.conversation import conv_templates, SeparatorStyle
@@ -110,7 +113,7 @@ class LLaMAVID(BaseModel):
 
         # Check if the video exists
         if os.path.exists(video):
-            video = load_video(video, self.nframe)
+            video = load_video(video, self.nframe, noise_name, ratio)
             video = video_processor.preprocess(video, return_tensors='pt')['pixel_values'].half().cuda()
             video = [video]
 
@@ -144,10 +147,10 @@ class LLaMAVID(BaseModel):
         outputs = outputs.strip()
         return outputs
 
-    def generate_inner(self, message, dataset=None):
+    def generate_inner(self, message, noise_name=None, ratio=None, dataset=None):
         if listinstr(['MLVU', 'MVBench'], dataset):
             question, video = self.message_to_promptvideo_withrole(message, dataset)
         else:
             question, video = self.message_to_promptvideo(message)
-        response = self.get_model_output(self.model, self.processor, self.tokenizer, video, question)
+        response = self.get_model_output(self.model, self.processor, self.tokenizer, video, question, noise_name, ratio)
         return response
