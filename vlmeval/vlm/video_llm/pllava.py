@@ -73,12 +73,11 @@ class PLLaVA(BaseModel):
         frame_indices = np.linspace(0, num_frames-1, num=nframe, dtype=int)
         frame_idx = frame_indices.tolist()
         
-        spare_frames = vr.get_batch(frame_idx).asnumpy()
-        video_tensor = torch.from_numpy(spare_frames).permute(0, 3, 1, 2)
+        spare_frames = vr.get_batch(frame_idx).permute(0, 3, 1, 2)
         if noise_name is not None and ratio:
-            video_tensor = NoiseRegistry.get_noise(noise_name)(video_tensor, ratio).cpu().permute(0, 2, 3, 1).numpy()
+            spare_frames = NoiseRegistry.get_noise(noise_name)(spare_frames, ratio).cpu().permute(0, 2, 3, 1).numpy()
         images_group = list()
-        for frame in video_tensor:
+        for frame in spare_frames:
             img = Image.fromarray(frame)
             images_group.append(transforms(img))
         return images_group
