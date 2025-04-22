@@ -11,6 +11,8 @@ from ...dataset import DATASET_TYPE
 from decord import VideoReader, cpu
 from PIL import Image
 from video_noise import NoiseRegistry
+import decord
+decord.bridge.set_bridge("torch")
 
 
 def _get_rawvideo_dec(
@@ -21,6 +23,8 @@ def _get_rawvideo_dec(
     video_framerate=1,
     s=None,
     e=None,
+    noise_name=None, 
+    ratio=None
 ):
     # speed up video decode via decord.
     video_mask = np.zeros(max_frames, dtype=np.int64)
@@ -62,11 +66,16 @@ def _get_rawvideo_dec(
         else:
             sample_pos = all_pos
 
-        patch_images = [Image.fromarray(f) for f in vreader.get_batch(sample_pos).asnumpy()]
+        # patch_images = [Image.fromarray(f) for f in vreader.get_batch(sample_pos).asnumpy()]
+        # patch_images = torch.stack(
+        #     [image_processor.preprocess(img, return_tensors='pt')['pixel_values'][0] for img in patch_images]
+        # )
 
-        patch_images = torch.stack(
-            [image_processor.preprocess(img, return_tensors='pt')['pixel_values'][0] for img in patch_images]
-        )
+        patch_images = vreader.get_batch(sample_pos).permute(0, 3, 1, 2)
+        if noise_name is not None and ratio:
+                patch_images = NoiseRegistry.get_noise(noise_name)(patch_images, ratio).cpu()
+
+        patch_images = image_processor.preprocess(patch_images, return_tensors='pt')['pixel_values']
         slice_len = patch_images.shape[0]
 
         max_video_length = max_video_length if max_video_length > slice_len else slice_len
@@ -145,11 +154,8 @@ class Chatunivi(BaseModel):
 
         video_frames, slice_len = _get_rawvideo_dec(
             video, video_processor, max_frames=MAX_IMAGE_LENGTH,
-            image_resolution=self.resolution, video_framerate=self.fps
+            image_resolution=self.resolution, video_framerate=self.fps, noise_name=noise_name, ratio=ratio
         )
-
-        if noise_name is not None and ratio:
-            video_frames = NoiseRegistry.get_noise(noise_name)(video_frames, ratio).cpu()
 
         if model.config.mm_use_im_start_end:
             qs = DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN * slice_len + DEFAULT_IM_END_TOKEN + '\n' + qs
