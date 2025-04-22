@@ -18,7 +18,7 @@ models=(
     # VideoChat2-HD
     # Chat-UniVi-7B
     # Chat-UniVi-7B-v1.5
-    # LLaMA-VID-7B
+    ## LLaMA-VID-7B
     # Video-ChatGPT
     # PLLaVA-7B
     # PLLaVA-13B
@@ -26,7 +26,7 @@ models=(
 )
 
 # 设置 GPU 数量（根据实际情况修改）
-NUM_GPUS=2
+NUM_GPUS=7
 
 for model in "${models[@]}"; do
     # 根据 model 决定 ratio 列表
@@ -60,6 +60,7 @@ for model in "${models[@]}"; do
             fi
 
             # 执行核心命令，输出文件默认写入 output_dir
+            uv run \
             torchrun \
                 --nproc-per-node="$NUM_GPUS" \
                 run.py \
