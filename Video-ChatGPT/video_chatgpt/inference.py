@@ -44,7 +44,7 @@ def get_spatio_temporal_features_torch(features):
     return concat_tokens
 
 
-def video_chatgpt_infer(video_frames, question, conv_mode, model, vision_tower, tokenizer, image_processor, video_token_len, noise_name, ratio):
+def video_chatgpt_infer(video_frames, question, conv_mode, model, vision_tower, tokenizer, image_processor, video_token_len):
     """
     Run inference using the Video-ChatGPT model.
 
@@ -80,8 +80,6 @@ def video_chatgpt_infer(video_frames, question, conv_mode, model, vision_tower, 
 
     # Preprocess video frames and get image tensor
     image_tensor = image_processor.preprocess(video_frames, return_tensors='pt')['pixel_values']
-    if noise_name is not None and ratio:
-            image_tensor = NoiseRegistry.get_noise(noise_name)(image_tensor, ratio).cpu()
 
     # Move image tensor to GPU and reduce precision to half
     image_tensor = image_tensor.half().cuda()

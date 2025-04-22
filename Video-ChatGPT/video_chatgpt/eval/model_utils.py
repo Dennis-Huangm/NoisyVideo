@@ -7,9 +7,10 @@ from video_chatgpt.model import VideoChatGPTLlamaForCausalLM
 from video_chatgpt.utils import disable_torch_init
 from video_chatgpt.constants import *
 import torch
+from video_noise import NoiseRegistry
 
 
-def load_video(vis_path, n_clips=1, num_frm=8):
+def load_video(vis_path, n_clips=1, num_frm=8, noise_name=None, ratio=None):
     """
     Load video frames from a video file.
 
@@ -33,13 +34,17 @@ def load_video(vis_path, n_clips=1, num_frm=8):
     total_num_frm = min(total_frame_num, num_frm)
     # Get indices of frames to extract
     frame_idx = get_seq_frames(total_frame_num, total_num_frm)
-    # Extract frames as numpy array
-    img_array = vr.get_batch(frame_idx).asnumpy()
+    # Extract frames as tensor
+    img_array = vr.get_batch(frame_idx)
     # Set target image height and width
     target_h, target_w = 224, 224
     # If image shape is not as target, resize it
     if img_array.shape[-3] != target_h or img_array.shape[-2] != target_w:
-        img_array = torch.from_numpy(img_array).permute(0, 3, 1, 2).float()
+        # img_array = torch.from_numpy(img_array).permute(0, 3, 1, 2).float()
+        img_array = img_array.permute(0, 3, 1, 2)
+
+        if noise_name is not None and ratio:
+            img_array = NoiseRegistry.get_noise(noise_name)(img_array, ratio).cpu().float()
         img_array = torch.nn.functional.interpolate(img_array, size=(target_h, target_w))
         img_array = img_array.permute(0, 2, 3, 1).to(torch.uint8).numpy()
 

@@ -48,7 +48,7 @@ class VideoChatGPT(BaseModel):
         from video_chatgpt.inference import video_chatgpt_infer
         conv_mode = 'video-chatgpt_v1'
 
-        video_frames = load_video(video)
+        video_frames = load_video(video, noise_name=noise_name, ratio=ratio)
         # Run inference on the video and questions
         output = video_chatgpt_infer(
             video_frames,
@@ -58,8 +58,7 @@ class VideoChatGPT(BaseModel):
             self.vision_tower,
             tokenizer,
             video_processor,
-            self.context_len,
-            noise_name, ratio
+            self.context_len
         )
         return output
 
