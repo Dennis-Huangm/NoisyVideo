@@ -15,6 +15,11 @@ pip install -e .
 pip install flash-attn --no-build-isolation
 ```
 部分模型无法直接通过transformers调用，需要自己安装源码。其中Chat-UniVi、LLaMA-VID、LLaVA需要执行pip install -e .来安装。
+在运行LLaMA-VID-7B时，由于其对transformers的版本有要求，需要单独运行:
+```bash
+pip install transformers==4.31.0
+```
+之后再开始推理与评估。
 ## Quick Start
  ### 1. 运行开源本地模型
 ```bash
