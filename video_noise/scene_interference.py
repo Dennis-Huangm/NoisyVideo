@@ -4,7 +4,6 @@ from .noise_applier import NoiseRegistry
 from .utils import *
 from torchvision.transforms import functional as F
 import cv2
-from torchvision.io import read_image
 
 
 @NoiseRegistry.register("rainy") # 雨
@@ -462,6 +461,7 @@ def add_frost_effect(video: torch.Tensor, ratio: float, severity: int = 5, frost
     import numpy as np
     import cv2
     import os
+    from PIL import Image
     
     def rgb2gray(rgb):
         """将RGB图像转换为灰度图像"""
@@ -488,7 +488,8 @@ def add_frost_effect(video: torch.Tensor, ratio: float, severity: int = 5, frost
         
         # 尝试读取霜冻纹理图像
         try:
-            frost = cv2.imread(filename)
+            img = Image.open(filename).convert("RGB")     # 建议显式转成 RGB
+            frost = np.array(img)
             if frost is None:
                 # 如果找不到文件，生成一个简单的随机霜冻纹理
                 frost_shape = (max(x.shape[0], 500), max(x.shape[1], 500), 3)

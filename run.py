@@ -191,6 +191,7 @@ def main():
         local_rank = os.environ.get('LOCAL_RANK', 0)
         dist.init_process_group(
             backend='nccl',
+            init_method='env://',
             timeout=datetime.timedelta(seconds=int(os.environ.get('DIST_TIMEOUT', 3600)))
         )
         torch.cuda.set_device(int(local_rank))
