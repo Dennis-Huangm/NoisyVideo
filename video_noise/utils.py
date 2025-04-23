@@ -7,6 +7,7 @@ from PIL import Image
 import torch.nn.functional as F
 from noise import pnoise2
 import numpy as np
+from torchvision.transforms import ToPILImage
 
 
 def gaussian_kernel(kernel_size, sigma, device):
@@ -73,9 +74,11 @@ def gamma_correction(image, gamma_range=(0.5, 1.5)):
 
 
 def save_image(image, name='./sample.png'):
-    frame_np = image.permute(1, 2, 0).cpu().numpy()
-    img_pil = Image.fromarray(frame_np)  # RGB
-    img_pil.save(name) 
+    to_pil = ToPILImage()
+    pil_image = to_pil(image)
+    # frame_np = image.permute(1, 2, 0).cpu().numpy()
+    # img_pil = Image.fromarray(frame_np)  # RGB
+    pil_image.save(name) 
 
 
 # 修正颜色空间转换维度处理

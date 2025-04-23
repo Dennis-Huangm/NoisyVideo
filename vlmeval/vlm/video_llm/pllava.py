@@ -11,6 +11,7 @@ from ...smp import isimg, listinstr, get_rank_and_world_size
 from ...dataset import DATASET_TYPE
 from huggingface_hub import snapshot_download
 from video_noise import NoiseRegistry
+from torchvision.transforms import ToPILImage
 
 
 class PLLaVA(BaseModel):
@@ -75,10 +76,12 @@ class PLLaVA(BaseModel):
         
         spare_frames = vr.get_batch(frame_idx).permute(0, 3, 1, 2)
         if noise_name is not None and ratio:
-            spare_frames = NoiseRegistry.get_noise(noise_name)(spare_frames, ratio).cpu().permute(0, 2, 3, 1).numpy()
+            spare_frames = NoiseRegistry.get_noise(noise_name)(spare_frames, ratio).cpu()
+
         images_group = list()
+        to_pil = ToPILImage()
         for frame in spare_frames:
-            img = Image.fromarray(frame)
+            img = to_pil(frame)
             images_group.append(transforms(img))
         return images_group
 
