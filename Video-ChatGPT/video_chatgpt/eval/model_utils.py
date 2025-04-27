@@ -44,7 +44,9 @@ def load_video(vis_path, n_clips=1, num_frm=8, noise_name=None, ratio=None):
         img_array = img_array.permute(0, 3, 1, 2)
 
         if noise_name is not None and ratio:
-            img_array = NoiseRegistry.get_noise(noise_name)(img_array, ratio).cpu().float()
+            img_array = NoiseRegistry.get_noise(noise_name)(img_array, ratio).cpu()
+        img_array = img_array.float()
+        # Resize the image to the target size
         img_array = torch.nn.functional.interpolate(img_array, size=(target_h, target_w))
         img_array = img_array.permute(0, 2, 3, 1).to(torch.uint8).numpy()
 

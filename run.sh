@@ -9,19 +9,19 @@ noise_names=(
     bright_transform contrast elastic color_shift flicker
     overexposure underexposure rainy foggy snow frost
     reflect shadow rolling_shutter resolution_degrade
-    stretch_squish edge_sawtooth color_quantized
+    stretch_squish edge_sawtooth color_quantized origin
 )
 
 # 定义模型数组（共9个）
 models=(
-    # Video-LLaVA-7B-HF
-    # VideoChat2-HD
+    Video-LLaVA-7B-HF
+    VideoChat2-HD
     Chat-UniVi-7B
     Chat-UniVi-7B-v1.5
-    # LLaMA-VID-7B
+    LLaMA-VID-7B
     Video-ChatGPT
     PLLaVA-7B
-    PLLaVA-13B
+    # PLLaVA-13B
 )
 
 # 设置GPU数量（根据实际情况修改）
@@ -41,6 +41,12 @@ for model in "${models[@]}"; do
 
         echo "------------------------------------------------------"
         echo "[$(date)] 开始执行组合：噪声类型->${noise} | 模型->${model}"
+
+        if [ "${noise}" = "Origin" ]; then
+            noise_arg=""
+        else
+            noise_arg="--noise_name ${noise}"
+        fi
         
         # 执行核心命令
         torchrun \
@@ -49,7 +55,7 @@ for model in "${models[@]}"; do
             --data MMBench_Video_8frame_nopack \
             --model "${model}" \
             --judge gpt-4o \
-            --noise_name "${noise}" \
+            ${noise_arg} \
             --ratio 0.9
             
         echo "[$(date)] 执行完成，等待60秒..."
