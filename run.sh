@@ -12,13 +12,12 @@ noise_names=(
     stretch_squish edge_sawtooth color_quantized origin
 )
 
-# 定义模型数组（共9个）
 models=(
     Video-LLaVA-7B-HF
     VideoChat2-HD
     Chat-UniVi-7B
     Chat-UniVi-7B-v1.5
-    LLaMA-VID-7B
+    # LLaMA-VID-7B
     Video-ChatGPT
     PLLaVA-7B
     # PLLaVA-13B
@@ -42,7 +41,7 @@ for model in "${models[@]}"; do
         echo "------------------------------------------------------"
         echo "[$(date)] 开始执行组合：噪声类型->${noise} | 模型->${model}"
 
-        if [ "${noise}" = "Origin" ]; then
+        if [ "${noise}" = "origin" ]; then
             noise_arg=""
         else
             noise_arg="--noise_name ${noise}"
