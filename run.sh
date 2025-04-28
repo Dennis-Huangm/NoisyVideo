@@ -21,7 +21,7 @@ models=(
     # LLaMA-VID-7B
     # Video-ChatGPT
     # PLLaVA-7B
-    PLLaVA-7B
+    PLLaVA-13B
     Qwen2.5-VL-3B-Instruct
 )
 
