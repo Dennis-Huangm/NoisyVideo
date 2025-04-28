@@ -13,14 +13,15 @@ noise_names=(
 )
 
 models=(
-    Video-LLaVA-7B-HF
-    VideoChat2-HD
-    Chat-UniVi-7B
-    Chat-UniVi-7B-v1.5
+    # Video-LLaVA-7B-HF
+    # VideoChat2-HD
+    # Chat-UniVi-7B
+    # Chat-UniVi-7B-v1.5
     # LLaMA-VID-7B
-    Video-ChatGPT
-    PLLaVA-7B
-    # PLLaVA-13B
+    # Video-ChatGPT
+    # PLLaVA-7B
+    Qwen2.5-VL-3B-Instruct
+
 )
 
 # 设置GPU数量（根据实际情况修改）
