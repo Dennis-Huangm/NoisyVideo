@@ -176,7 +176,7 @@ class Qwen2VLChat(Qwen2VLPromptMixin, BaseModel):
 
     def generate_inner(self, message, noise_name=None, ratio=None, dataset=None):
         try:
-            from qwen_vl_utils import process_vision_info
+            from utils import process_vision_info
         except Exception as err:
             logging.critical("qwen_vl_utils not found, please install it via 'pip install qwen-vl-utils'")
             raise err
@@ -191,7 +191,7 @@ class Qwen2VLChat(Qwen2VLPromptMixin, BaseModel):
         text = self.processor.apply_chat_template([messages], tokenize=False, add_generation_prompt=True)
         images, videos = process_vision_info([messages])
         if noise_name is not None and ratio:
-            videos = NoiseRegistry.get_noise(noise_name)(videos[0], ratio).cpu()
+            videos = NoiseRegistry.get_noise(noise_name)(videos[0].to(torch.uint8), ratio).cpu()
             
         inputs = self.processor(text=text, images=images, videos=videos, padding=True, return_tensors='pt')
         inputs = inputs.to('cuda')

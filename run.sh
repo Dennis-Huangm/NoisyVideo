@@ -9,7 +9,7 @@ noise_names=(
     bright_transform contrast elastic color_shift flicker
     overexposure underexposure rainy foggy snow frost
     reflect shadow rolling_shutter resolution_degrade
-    stretch_squish edge_sawtooth color_quantized origin
+    stretch_squish edge_sawtooth color_quantized # origin
 )
 
 # 定义模型列表
@@ -21,7 +21,7 @@ models=(
     # LLaMA-VID-7B
     # Video-ChatGPT
     # PLLaVA-7B
-    PLLaVA-13B
+    # PLLaVA-13B
     Qwen2.5-VL-3B-Instruct
 )
 
