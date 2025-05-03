@@ -5,7 +5,7 @@ ROOT_PATH = 'outputs'
 noises    = ['origin'] + NoiseRegistry.list_noises() 
 models    = ['Video-LLaVA-7B-HF', 'LLaMA-VID-7B', 'VideoChat2-HD',
              'Chat-UniVi-7B', 'Chat-UniVi-7B-v1.5',
-             'Video-ChatGPT', 'PLLaVA-7B']
+             'Video-ChatGPT', 'PLLaVA-7B', "Qwen2.5-VL-3B-Instruct", "PLLaVA-13B"]
 
 def record_to_csv():
     # 用来统计每个模型 origin 分数低于其他噪声的次数
@@ -29,7 +29,7 @@ def record_to_csv():
         for noise in noises:
             folder = os.path.join(ROOT_PATH, model, noise)
             try:
-                fn = [f for f in os.listdir(folder) if f.endswith('.json')][0]
+                fn = [f for f in os.listdir(folder) if f.endswith('0.9_gpt-4o_rating.json')][0]
                 data = json.load(open(os.path.join(folder, fn), 'r'))
             except (IndexError, FileNotFoundError, json.JSONDecodeError) as e:
                 print(f"Error processing {folder}: {e}")
