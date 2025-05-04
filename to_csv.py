@@ -3,11 +3,9 @@ from video_noise import NoiseRegistry
 
 ROOT_PATH = 'outputs'
 noises    = ['origin'] + NoiseRegistry.list_noises() 
-models    = ['Video-LLaVA-7B-HF', 'LLaMA-VID-7B', 'VideoChat2-HD',
-             'Chat-UniVi-7B', 'Chat-UniVi-7B-v1.5',
-             'Video-ChatGPT', 'PLLaVA-7B', "Qwen2.5-VL-3B-Instruct", "PLLaVA-13B"]
+models    = ["Qwen2.5-VL-3B-Instruct"]
 
-def record_to_csv():
+def record_to_csv(eval_dic):
     # 用来统计每个模型 origin 分数低于其他噪声的次数
     issue_counts = {}
 
@@ -47,16 +45,22 @@ def record_to_csv():
 
             # 构造表格记录
             if noise == 'origin':
-                noise = 'clean'
+                noise_name = 'clean'
+            else:
+                noise_name = noise
             # 这里的 noise_type 是为了和原有表格保持一致
-            rec = {'noise_type': noise}
+            rec = {'noise_type': noise_name}
             rec.update(valid)
+
+            criterions = eval_dic[model].get(noise)
+            rec.update(criterions)
             records.append(rec)
 
         # 把表格生成 DataFrame 并输出 LaTeX 行
         df = pd.DataFrame(records)
         preprocess(df)
         print(f"\n=== {model} ===")
+        print(df)
         cols = df.columns.tolist()
         cols.pop(0)
         for _, row in df.iterrows():
@@ -87,5 +91,3 @@ def preprocess(df):
     pos  = df.columns.get_loc('TR') + 1
     df.insert(pos, 'Reasoning', col_to_move)
 
-if __name__ == '__main__':
-    record_to_csv()
