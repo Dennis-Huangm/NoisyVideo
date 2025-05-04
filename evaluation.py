@@ -6,6 +6,7 @@ from to_csv import record_to_csv
 import sacrebleu
 from bert_score import score
 from evaluate import load
+from sentence_transformers import SentenceTransformer, util
 
 rouge_judge = load('rouge')
 ROOT_PATH = 'outputs'
@@ -26,6 +27,7 @@ pattern = re.compile(r'''
 ''', flags=re.VERBOSE)
 digital_pattern = re.compile(r'^\d+(?:\.\d+)?$')
 dic = {}
+sbert_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
 
 def accuracy_score():
@@ -125,7 +127,22 @@ def metric_score():
             print(f"BLEU: {bleu}")
             rouge = round(rouge_judge.compute(predictions=predict, references=ans)['rougeLsum'], 2)
             print(f"ROUGE: {rouge}")
-            bert = round(score(predict, ans, lang='en', verbose=True)[2].mean().item(), 2)
+            # bert = round(score(predict, ans, lang='en', verbose=True)[2].mean().item(), 2)
+            embeddings1 = sbert_model.encode(
+                predict,
+                batch_size=32,
+                convert_to_tensor=True,
+                show_progress_bar=True
+            )
+            embeddings2 = sbert_model.encode(
+                ans,
+                batch_size=32,
+                convert_to_tensor=True,
+                show_progress_bar=True
+            )
+            cosine_scores = util.cos_sim(embeddings1, embeddings2)
+            pairwise_scores = cosine_scores.diag().cpu().tolist()
+            bert = round(sum(pairwise_scores)/len(pairwise_scores), 2)
             print(f"BERT: {bert}")
 
             dic[model][noise].update({'bleu': bleu, 'rouge': rouge, 'bert': bert})
