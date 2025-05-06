@@ -3,8 +3,17 @@ from video_noise import NoiseRegistry
 
 ROOT_PATH = 'outputs'
 noises    = ['origin'] + NoiseRegistry.list_noises() 
-models    = ["Qwen2.5-VL-3B-Instruct"]
-
+models = [
+    # "Video-LLaVA-7B-HF",
+    "VideoChat2-HD",
+    # "Chat-UniVi-7B",
+    "Chat-UniVi-7B-v1.5",
+    "LLaMA-VID-7B",
+    # "Video-ChatGPT",
+    # "PLLaVA-7B",
+    "PLLaVA-13B",
+    "Qwen2.5-VL-3B-Instruct",
+]
 def record_to_csv(eval_dic):
     # 用来统计每个模型 origin 分数低于其他噪声的次数
     issue_counts = {}

@@ -13,3 +13,5 @@ seed = 42
 torch.manual_seed(seed)
 random.seed(seed)   
 np.random.seed(seed) 
+
+print("video_noise package initialized.")
