@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer, util
 ROOT_PATH = 'outputs'
 noises = ['origin'] + NoiseRegistry.list_noises()
 models = [
-    # "VideoChat2-HD",
+    "VideoChat2-HD",
     "Chat-UniVi-7B-v1.5",
     "LLaMA-VID-7B",
     "PLLaVA-13B",
@@ -161,4 +161,6 @@ def print_latex_tables(metrics_df):
 if __name__ == '__main__':
     all_df = load_data()
     metrics_df = score_metrics(all_df)
-    print_latex_tables(metrics_df)
+    # Save the metrics DataFrame to a CSV file
+    metrics_df.to_csv('metrics.csv', index=False)
+    # print_latex_tables(metrics_df)
