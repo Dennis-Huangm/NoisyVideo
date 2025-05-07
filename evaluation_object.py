@@ -11,10 +11,10 @@ from sentence_transformers import SentenceTransformer, util
 ROOT_PATH = 'outputs'
 noises = ['origin'] + NoiseRegistry.list_noises()
 models = [
-    "VideoChat2-HD",
-    "Chat-UniVi-7B-v1.5",
-    "LLaMA-VID-7B",
-    "PLLaVA-13B",
+    # "VideoChat2-HD",
+    # "Chat-UniVi-7B-v1.5",
+    # "LLaMA-VID-7B",
+    # "PLLaVA-13B",
     "Qwen2.5-VL-3B-Instruct",
 ]
 index =  [1, 2, 11, 20, 35, 36, 51, 56, 61, 68, 72, 78, 82, 92, 94, 111, 113, 124, 136, 137, 142, 161, 168, 172, 177, 179, 181, 183, 184, 186, 206, 212, 217, 231, 242, 252, 260, 270, 271, 281, 285, 288, 307, 310, 315, 345, 348, 407, 425, 426, 447, 454, 463, 471, 479, 493, 530, 532, 536, 537, 546, 554, 556, 558, 563, 570, 574, 576, 577, 581, 583, 594, 610, 612, 613, 617, 665, 670, 675, 720, 754, 803, 809, 864, 867, 869, 871, 903, 910, 916, 917, 978, 979, 981, 984, 990, 1011, 1025, 1029, 1057, 1062, 1090, 1093, 1106, 1119, 1120, 1121, 1123, 1124, 1125, 1126, 1128, 1130, 1131, 1133, 1134, 1135, 1143, 1151, 1181, 1185, 1187, 1191, 1197, 1201, 1209, 1214, 1223, 1229, 1257, 1261, 1265, 1275, 1279, 1285, 1326, 1341, 1391, 1420, 1430, 1435, 1451, 1484, 1485, 1486, 1538, 1570, 1588, 1590, 1592, 1617, 1622, 1653, 1682, 1698, 1737, 1740, 1744, 1745, 1747, 1759, 1769, 1802, 1805, 1815, 1835, 1839, 1852, 1856, 1873, 1877, 1886, 1897, 1898, 1911, 1912, 1913, 1918, 1919, 1930, 1931, 1932, 1943, 1944, 1945, 1951, 1952, 1960, 1967, 1968, 1970, 1971, 1975, 1977, 1978, 1979, 1980, 1981]          
@@ -49,7 +49,8 @@ def load_data():
             folder = os.path.join(ROOT_PATH, model, noise)
             if not os.path.isdir(folder):
                 continue
-            files = [f for f in os.listdir(folder) if f.lower().endswith('.xlsx')]
+            files = [f for f in os.listdir(folder) if f.lower().endswith('0.9.xlsx')]
+            print(files)
             if not files:
                 continue
             df = pd.read_excel(os.path.join(folder, files[0]))
@@ -163,4 +164,4 @@ if __name__ == '__main__':
     metrics_df = score_metrics(all_df)
     # Save the metrics DataFrame to a CSV file
     metrics_df.to_csv('metrics.csv', index=False)
-    # print_latex_tables(metrics_df)
+    print_latex_tables(metrics_df)
