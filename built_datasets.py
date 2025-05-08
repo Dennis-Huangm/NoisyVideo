@@ -25,11 +25,10 @@ video_extensions = ('.mp4', '.avi', '.mov', '.mkv')
 
 os.makedirs(output_base_dir, exist_ok=True)
 
-# --- 列出所有原始视频（限制前5个）---
 video_files = [
     f for f in os.listdir(video_dir)
     if f.lower().endswith(video_extensions)
-][:5]
+]
 print("待处理视频:", video_files)
 
 # --- 获取所有噪声类型 ---
