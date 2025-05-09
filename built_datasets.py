@@ -51,7 +51,6 @@ def main():
                 print(f"Rank {rank}: 跳过 {video_file}")
                 continue
 
-
             try:
                 frames, _, info = torchvision.io.read_video(
                     in_path, pts_unit="sec", output_format="TCHW"
@@ -64,7 +63,7 @@ def main():
             
 
             # 噪声循环也加进度条
-            for noise, noise_dir, output_path in tqdm(required_noises, desc=f"[GPU {local_rank}] {video_file} 噪声列表", leave=False):
+            for noise, noise_dir, output_path in tqdm(required_noises, desc=f"[GPU {local_rank}] {video_file} 噪声列表"):
                 os.makedirs(noise_dir, exist_ok=True)
 
                 try:
