@@ -63,7 +63,7 @@ def main():
             
 
             # 噪声循环也加进度条
-            for noise, noise_dir, output_path in tqdm(required_noises, desc=f"[GPU {local_rank}] {video_file} 噪声列表"):
+            for noise, noise_dir, output_path in tqdm(required_noises, desc=f"[GPU {local_rank}] {video_file} {noise} 噪声处理中"):
                 os.makedirs(noise_dir, exist_ok=True)
 
                 try:
