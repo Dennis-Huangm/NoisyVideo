@@ -63,8 +63,19 @@ def main():
             
 
             # 噪声循环也加进度条
-            for noise, noise_dir, output_path in tqdm(required_noises, desc=f"[GPU {local_rank}] {video_file} {noise} 噪声处理中"):
+            for idx, (noise, noise_dir, output_path) in enumerate(
+                tqdm(required_noises, 
+                    desc=f"[GPU {local_rank}] {video_file[:10]}.. 噪声处理", 
+                    leave=False,
+                    unit="noise",
+                    bar_format="{l_bar}{bar:20}{r_bar}{bar:-20b}"),
+                start=1
+            ):
                 os.makedirs(noise_dir, exist_ok=True)
+                # 在日志中记录当前处理的噪声名称
+                if idx == 1:  # 只在第一个噪声时打印视频信息
+                    tqdm.write(f"[GPU {local_rank}] 正在处理 {video_file} | 噪声数: {len(required_noises)}")
+                tqdm.write(f"  正在处理噪声: {noise[:15]}...")  # 截断长名称
 
                 try:
                     noisy = NoiseRegistry.get_noise(noise)(frames.clone(), 0.9)
