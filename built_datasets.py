@@ -7,7 +7,8 @@ import torchvision
 from video_noise.noise_applier import NoiseRegistry
 import decord
 decord.bridge.set_bridge("torch")
-banned_noises = ['rolling_shutter', 'foggy', 'frost', 'edge_sawtooth', 'target_block', 'rainy', 'zoom_blur', 'defocus_blur', 'glass_blur', 'bright_transform', 'elastic', 'snow']
+
+fnames = ['0C1aaSXIG_o.mp4', '68191uKawYw.mp4', '83yqxdMA4A4.mp4', '9-r4VLHQRlM_processed.mp4', 'Ak1eEUNrpgo_processed.mp4', 'Eg64S0DhAaI.mp4', 'Nv_W7Agoqio.mp4', 'P3bevifVByk.mp4', 'TUlxth701GM_processed.mp4', 'Uz1eS_85bCY.mp4', '_Zt1EuIEhvw_processed.mp4', '_e7NvQFJ2uA.mp4', 'ddzjFNvpZhM.mp4', 'lnShWOBzgGM.mp4', 'nM0cdiAn864_processed.mp4', 'ruKJCiAOmfg.mp4', 'xUkqUL5bXSE.mp4', 'zBv_fuKyg5E.mp4', 'zpnq5Hl8uwQ.mp4']
 
 def save_as_video(tensor: torch.Tensor, save_path: str, fps: int = 30):
     array = tensor.permute(0,2,3,1).cpu().numpy()
@@ -31,13 +32,13 @@ def main():
         os.makedirs(output_base_dir, exist_ok=True)
         exts = ('.mp4','.avi','.mov','.mkv')
         all_videos = sorted([
-            f for f in os.listdir(video_dir)
+            f for f in fnames
             if f.lower().endswith(exts)
         ])
         all_videos = all_videos[:100]
         my_videos = all_videos[rank::world_size]
 
-        noises = [noise for noise in NoiseRegistry.list_noises() if noise not in banned_noises]
+        noises = NoiseRegistry.list_noises() 
 
         start = time.perf_counter()
         for video_file in tqdm(my_videos, desc=f"[GPU {local_rank}] 视频列表"):
