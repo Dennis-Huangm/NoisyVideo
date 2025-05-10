@@ -5,6 +5,9 @@ import torch
 import torch.distributed as dist
 import torchvision
 from video_noise.noise_applier import NoiseRegistry
+import decord
+decord.bridge.set_bridge("torch")
+banned_noises = ['rolling_shutter', 'foggy', 'frost', 'edge_sawtooth', 'target_block', 'rainy', 'zoom_blur', 'defocus_blur', 'glass_blur', 'bright_transform', 'elastic', 'snow']
 
 def save_as_video(tensor: torch.Tensor, save_path: str, fps: int = 30):
     array = tensor.permute(0,2,3,1).cpu().numpy()
@@ -24,16 +27,17 @@ def main():
 
     try: 
         video_dir       = 'video'
-        output_base_dir = 'output_video'
+        output_base_dir = 'outputs_video'
         os.makedirs(output_base_dir, exist_ok=True)
         exts = ('.mp4','.avi','.mov','.mkv')
         all_videos = sorted([
             f for f in os.listdir(video_dir)
             if f.lower().endswith(exts)
         ])
+        all_videos = all_videos[:100]
         my_videos = all_videos[rank::world_size]
 
-        noises = NoiseRegistry.list_noises()
+        noises = [noise for noise in NoiseRegistry.list_noises() if noise not in banned_noises]
 
         start = time.perf_counter()
         for video_file in tqdm(my_videos, desc=f"[GPU {local_rank}] 视频列表"):
@@ -52,18 +56,25 @@ def main():
                 continue
 
             try:
-                frames, _, info = torchvision.io.read_video(
-                    in_path, pts_unit="sec", output_format="TCHW"
-                )
-                fps = int(info.get("video_fps", 30))
-                print(f"视频 {video_file} 帧数: {frames.shape[0]}")
+                # frames, _, info = torchvision.io.read_video(
+                #     in_path, pts_unit="sec", output_format="TCHW"
+                # )
+                # fps = int(info.get("video_fps", 30))
+                vr = decord.VideoReader(in_path, ctx=decord.cpu(0))
+                total_frames = len(vr)
+                fps = int(round(vr.get_avg_fps()))
+                idx = torch.linspace(0, total_frames - 1, 8).round().long().tolist()
+
+                all_frames = vr.get_batch(range(total_frames)).permute(0, 3, 1, 2)
+                print(f"视频 {video_file} 帧数: {all_frames.shape[0]}")
             except Exception as e:
                 print(f"[{rank}] 读视频失败 {video_file}: {e}")
                 continue
             
 
             # 噪声循环也加进度条
-            for idx, (noise, noise_dir, output_path) in enumerate(
+            # for noise, noise_dir, output_path in tqdm(required_noises, desc=f"[GPU {local_rank}] {video_file} {noise} 噪声处理中"):
+            for idx_, (noise, noise_dir, output_path) in enumerate(
                 tqdm(required_noises, 
                     desc=f"[GPU {local_rank}] {video_file[:10]}.. 噪声处理", 
                     leave=False,
@@ -73,15 +84,20 @@ def main():
             ):
                 os.makedirs(noise_dir, exist_ok=True)
                 # 在日志中记录当前处理的噪声名称
-                if idx == 1:  # 只在第一个噪声时打印视频信息
+                if idx_ == 1:  # 只在第一个噪声时打印视频信息
                     tqdm.write(f"[GPU {local_rank}] 正在处理 {video_file} | 噪声数: {len(required_noises)}")
                 tqdm.write(f"  正在处理噪声: {noise[:15]}...")  # 截断长名称
 
-                try:
-                    noisy = NoiseRegistry.get_noise(noise)(frames.clone(), 0.9)
-                    save_as_video(noisy.to('cpu'), output_path, fps=fps)
-                except Exception as e:
-                    print(f"[{rank}] 处理失败: {video_file} / {noise}: {e}")
+         
+                selected_frames = all_frames[idx]
+                noisy_selected = NoiseRegistry.get_noise(noise)(selected_frames.clone(), 0.9)
+
+                processed_frames = all_frames.clone()
+                for i, frame_idx in enumerate(idx):
+                    processed_frames[frame_idx] = noisy_selected[i]
+
+                save_as_video(processed_frames.to('cpu'), output_path, fps=fps)
+
 
         elapsed = time.perf_counter() - start
         print(f"[Rank {rank}] 全部完成，用时 {elapsed:.1f}s")
