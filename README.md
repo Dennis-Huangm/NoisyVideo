@@ -36,7 +36,7 @@ save_image(video[0], 'sample.png')
 ```
 
 # QuickStart
-Refer to the [Quickstart](./QuickStart.md) guide for setup instructions.
+Refer to the [Quickstart](docs/QuickStart.md) guide for setup instructions.
 
 # Acknowledgement
 We sincerely thank [VLMEvalkit](https://github.com/open-compass/VLMEvalKit) for their pioneering works on large vision-language model evaluation. 
