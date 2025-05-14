@@ -1,15 +1,15 @@
 ![输入图片说明](docs/benchmark.png)
 
-# NoiseEvalKit
+# NoisyVideo
 
-**NoiseEvalKit** (tentative name) is a toolkit for assessing Video-LLM performance on **question answering tasks** under various **noise conditons** based on `VLMEvalKit`, which is an **open-source evaluation toolkit** of **large vision-language models**. Our toolkit encompasses **36 noise types** in 8 categories, and **9 question types** to comprehensively evaluate the robustness of Video-LLMs. By using the toolkit, we can evaluate the performance of state-of-the-art Video-LLMs for the initial systematic evaluation from multiple perspectives.
+**NoisyVideo** is a toolkit for assessing Video-LLM performance on **question answering tasks** under various **noise conditons** based on `VLMEvalKit`, which is an **open-source evaluation toolkit** of **large vision-language models**. Our toolkit encompasses **36 noise types** in 8 categories, and **9 question types** to comprehensively evaluate the robustness of Video-LLMs. By using the toolkit, we can evaluate the performance of state-of-the-art Video-LLMs for the initial systematic evaluation from multiple perspectives.
 
 # Visual Noise
 
 We introduce a wide range of noise types that reflect real-world situations in video data to evaluate the robustness of Video-LLMs. From the literature, we identify **36 types of different noise** due to capturing, processing, and saving.
 To better analyze the impacts of different noises, we further categorize them into 8 groups by their characteristics. Namely, they are distinct noises related to **quality**, **temporality**, **blurring**, **lighting/color**, **scene interference**, **digitality**, **occlusion**, and **compression**.
 ![输入图片说明](docs/noise.png)
-Noise implementations are stored in the `video_noise` directory, organized into individual files by noise type/category.
+Noise implementations are stored in the `video_noise` directory, organized into individual files by noise category.
 |Noise types| Specific Noise |
 |:--:|--|
 | **Quality** <br>(4 types) |                                                                                **Gaussian**: *Gaussian white noise exhibits normal amplitude distribution and uniform spectral energy.*<br> **Impulse**: *brief, random spikes of noise that create sudden bright or dark pixels (salt-and-pepper effect).*<br> **Speckle**: *granular, multiplicative noise that creates a grainy texture by causing small intensity variations.* <br> **Poisson**: *signal-dependent noise from random photon arrival events.* <br>|
@@ -44,4 +44,4 @@ We also gratefully acknowledge the following open-source projects and pre-traine
 
 # License
 
-This project is released under the Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license. Please see the LICENSE file for more information.
+This project is released under the Apache-2.0 license. Please see the LICENSE file for more information.
