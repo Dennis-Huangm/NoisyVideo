@@ -47,7 +47,7 @@ pip install flash-attn --no-build-isolation
 ```
 Some models cannot be directly invoked via the `transformers` library and require manual installation from their source code. For ​**​Chat-UniVi​**​, ​**​LLaMA-VID​**​, and ​**​LLaVA​**​, you must `cd their_source_code_directory` and run `pip install -e .` to install them. Note that **​LLaMA-VID-7B​** may not be able to run under certain transformer versions, we recommend to use `transformers==4.31.0` while evaluating.
 
-# Step 2: Prediction
+## Step 2: Prediction
 
 We use `run.py` to get the prediction under diverse visual noise and the basic **GPT score** judged by conventional LLMs.
 
@@ -88,7 +88,7 @@ python run.py --data MMBench_Video_8frame_nopack --model GPT4V --judge gpt-4o
 The configuration remains identical to the above settings. Simply append specific noise parameters afterward, but ensure API calls are restricted to single-process execution.
 To disable noise addition, simply omit the `noise` and `ratio` parameters. 
 
-# **Step 3: Evaluation**
+## **Step 3: Evaluation**
 Following prior work, we incorporate a traditional metric in our benchmark: the ​**​GPT score​**​. However, as this metric relies solely on a single model’s judgment, we propose complementary evaluations: (1) the ​**​SBERT score​**​ for semantic alignment, and (2) ​**​accuracy​**​ on selection-based tasks as statistical indicators.
 
 `evaluation.py` computes the ​​**​GPT score​**, **​SBERT score​**​ and ​**​Accuracy for True/False questions​**​ across multiple perspectives, supporting diverse Video-LLMs and noise parameters.
