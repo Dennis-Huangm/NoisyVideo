@@ -106,7 +106,7 @@ def accuracy_score_qtype():
 def accuracy_score_vtype():
     for model in models:
         for noise in tqdm(noises, desc=f"Model={model} processing acc"):
-            Video_Type = {}
+            Video_Type = {'Overall': []}
             folder = os.path.join(ROOT_PATH, model, noise)
             if not os.path.isdir(folder):
                 continue
@@ -136,6 +136,7 @@ def accuracy_score_vtype():
                     correct = pred_str.lower().startswith(ans_val)
 
                     Video_Type[vtype].append(correct)
+                    Video_Type['Overall'].append(correct)
             qtype_acc = {k: f"{np.mean([int(x) for x in v]):.3f}" for k, v in Video_Type.items()}
             pth = os.path.join(folder, f"{model}_{noise}_{ratio}_acc_vtype.json")
             print(f"\n=== {model} ACC ===")
@@ -186,7 +187,7 @@ def sbert_score_qtype():
 def sbert_score_vtype():
         for model in models:
             for noise in tqdm(noises, desc=f"Model={model} processing sbert"):
-                Video_Type = {}
+                Video_Type = {'Overall': []}
                 folder = os.path.join(ROOT_PATH, model, noise)
                 if not os.path.isdir(folder):
                     continue
@@ -200,19 +201,22 @@ def sbert_score_vtype():
 
                 groups = df.groupby(['video_type'])
                 for (vtype,), group in tqdm(groups, total=len(groups), desc="Video Types", leave=False):
-                    ans = list(group['answer'])
-                    predict = list(group['prediction'])
-                    emb1 = sbert_model.encode(predict, batch_size=32, convert_to_tensor=True)
-                    emb2 = sbert_model.encode(ans, batch_size=32, convert_to_tensor=True)
-                    cos_scores = util.cos_sim(emb1, emb2).diag().cpu().tolist()
-                    bert_score = round(sum(cos_scores) / len(cos_scores), 3) if cos_scores else None
+                    Video_Type[vtype] = []
+                    for i in range(len(group)):
+                        ans = str(group.iloc[i]['answer'])
+                        predict = str(group.iloc[i]['prediction'])
+                        emb1 = sbert_model.encode([predict], convert_to_tensor=True, show_progress_bar=False)
+                        emb2 = sbert_model.encode([ans], convert_to_tensor=True, show_progress_bar=False)
+                        score = util.cos_sim(emb1, emb2).item()
 
-                    Video_Type[vtype] = bert_score
+                        Video_Type[vtype].append(score)
+                        Video_Type['Overall'].append(score)
 
+                vtype_sbert = {k: f"{round(np.mean(v), 4)}" for k, v in Video_Type.items()}
                 pth = os.path.join(folder, f"{model}_{noise}_{ratio}_sbert_vtype.json")
                 print(f"\n=== {model} SBERT ===")
-                print(json.dumps(Video_Type, indent=4))
-                json.dump(Video_Type, open(pth, 'w'), indent=4, ensure_ascii=False)
+                print(json.dumps(vtype_sbert, indent=4))
+                json.dump(vtype_sbert, open(pth, 'w'), indent=4, ensure_ascii=False)
 
 
 def gpt_score_qtype():
@@ -253,7 +257,7 @@ def gpt_score_qtype():
 def gpt_score_vtype():
     for model in models:
         for noise in tqdm(noises, desc=f"Model={model} processing gpt"):
-            Video_Type = {}
+            Video_Type = {'Overall': []}
             folder = os.path.join(ROOT_PATH, model, noise)
             if not os.path.isdir(folder):
                 continue
@@ -270,6 +274,7 @@ def gpt_score_vtype():
                 Video_Type[vtype] = []
                 for i in range(len(group)):
                     Video_Type[vtype].append(group.iloc[i]['score'])
+                    Video_Type['Overall'].append(group.iloc[i]['score'])
             vtype_gpt = {k: f"{np.mean([max(x, 0) for x in v]):.3f}" for k, v in Video_Type.items()}
             pth = os.path.join(folder, f"{model}_{noise}_{ratio}_gpt_vtype.json")
             print(f"\n=== {model} GPT ===")
