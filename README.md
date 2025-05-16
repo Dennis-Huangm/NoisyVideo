@@ -89,35 +89,15 @@ Once configured, you may utilize `run.py` and `evaluation.py` to perform a compr
 
 <details>
 <summary><strong>Step 0: Setup API keys</strong></summary>
-To use API models (e.g., GPT-4o, Gemini-Pro-V) for inference, or to utilize the LLM API as an evaluator or selector-extractor, you must first configure your API key.
+To use API models (e.g., GPT-4o, Gemini-Pro-V) for inference, or to utilize the LLM API as an evaluator or selector-extractor, you must first configure your API key. We recommend utilizing the OpenAI-compatible API schema to access all Video-LLMs.
 
- - ​ If you need to use the API, enter your key in the corresponding key field. These API keys will be automatically loaded during inference and evaluation. You can place the required API keys in the `$VLMEvalKit/.env` file or set them directly as environment variables. If you choose to create a `.env` file, its contents should look like this:
+ - ​ If you need to use the API, enter your key in the corresponding key field. The API keys will be automatically loaded during inference and evaluation. You can place the required API keys in the `$VideoNoise/.env` file or set them directly as environment variables. If you choose to create a `.env` file, its contents should look like this:
  ```
-# The .env file, place it under $VLMEvalKit
+# The .env file, place it under $VideoNoise
 # API Keys of Proprietary VLMs
-# QwenVL APIs
-DASHSCOPE_API_KEY=
-# Gemini w. Google Cloud Backends
-GOOGLE_API_KEY=
 # OpenAI API
 OPENAI_API_KEY=
 OPENAI_API_BASE=
-# StepAI API
-STEPAI_API_KEY=
-# REKA API
-REKA_API_KEY=
-# GLMV API
-GLMV_API_KEY=
-# CongRong API
-CW_API_BASE=
-CW_API_KEY=
-# SenseNova API
-SENSENOVA_API_KEY=
-# Hunyuan-Vision API
-HUNYUAN_SECRET_KEY=
-HUNYUAN_SECRET_ID=
-# LMDeploy API
-LMDEPLOY_API_BASE=
 # You can also set a proxy for calling api models during the evaluation stage
 EVAL_PROXY=
 ```
