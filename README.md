@@ -149,6 +149,7 @@ To disable noise addition, simply omit the `noise` and `ratio` parameters.
 
 <details>
 <summary><strong>Step 2: Evaluation</strong></summary>
+
 Following prior work, we incorporate a traditional metric in our benchmark: the ​**​GPT score​**​. However, as this metric relies solely on a single model’s judgment, we propose complementary evaluations: (1) the ​**​SBERT score​**​ for semantic alignment, and (2) ​**​accuracy​**​ on selection-based tasks as statistical indicators.
 
 `evaluation.py` computes the ​​**​GPT score​**, **​SBERT score​**​ and ​**​Accuracy for True/False questions​**​ across multiple perspectives, supporting diverse Video-LLMs and noise parameters.
