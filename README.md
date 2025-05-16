@@ -45,7 +45,7 @@ Noise implementations are stored in the `video_noise` directory, organized into 
 # Installation
 ```
 conda create --name ${your_env_name} python==3.9
-cd VLMEvalKit
+cd VideoNoise
 pip install -e .
 pip install flash-attn --no-build-isolation
 ```
