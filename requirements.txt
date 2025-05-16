@@ -1,5 +1,6 @@
 transformers==4.49.0
 accelerate
+av==14.3.0
 decord; platform_machine != 'arm64'
 eva-decord; platform_machine == 'arm64'
 gradio
