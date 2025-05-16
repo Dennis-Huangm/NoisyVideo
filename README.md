@@ -45,7 +45,7 @@ Noise implementations are stored in the `video_noise` directory, organized into 
 # Installation
 ```
 conda create --name ${your_env_name} python==3.9
-cd VideoNoise
+cd NoisyVideo
 pip install -e .
 pip install flash-attn --no-build-isolation
 ```
@@ -92,9 +92,9 @@ Once configured, you may utilize `run.py` and `evaluation.py` to perform a compr
 
 To use API models (e.g., GPT-4o, Gemini-Pro-V) for inference, or to utilize the LLM API as an evaluator or selector-extractor, you must first configure your API key. We recommend utilizing the **OpenAI-compatible** API schema to access all Video-LLMs.
 
- - ​ If you need to use the API, enter your key in the corresponding key field. The API keys will be automatically loaded during inference and evaluation. You can place the required API keys in the `$VideoNoise/.env` file or set them directly as environment variables. If you choose to create a `.env` file, its contents should look like this:
+ - ​ If you need to use the API, enter your key in the corresponding key field. The API keys will be automatically loaded during inference and evaluation. You can place the required API keys in the `$NoisyVideo/.env` file or set them directly as environment variables. If you choose to create a `.env` file, its contents should look like this:
  ```
-# The .env file, place it under $VideoNoise
+# The .env file, place it under $NoisyVideo
 # API Keys of Proprietary VLMs
 # OpenAI API
 OPENAI_API_KEY=
