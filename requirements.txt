@@ -27,6 +27,7 @@ requests
 rich
 scipy
 sentencepiece
+sentence-transformers
 setuptools
 scikit-image
 sty
