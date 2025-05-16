@@ -46,6 +46,7 @@ Noise implementations are stored in the `video_noise` directory, organized into 
 ```
 conda create --name ${your_env_name} python==3.9
 conda activate ${your_env_name}
+git clone https://github.com/Dennis-Huangm/NoisyVideo.git
 cd NoisyVideo
 pip install -e .
 pip install flash-attn --no-build-isolation
