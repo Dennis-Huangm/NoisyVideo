@@ -89,7 +89,8 @@ Once configured, you may utilize `run.py` and `evaluation.py` to perform a compr
 
 <details>
 <summary><strong>Step 0: Setup API keys</strong></summary>
-To use API models (e.g., GPT-4o, Gemini-Pro-V) for inference, or to utilize the LLM API as an evaluator or selector-extractor, you must first configure your API key. We recommend utilizing the OpenAI-compatible API schema to access all Video-LLMs.
+
+To use API models (e.g., GPT-4o, Gemini-Pro-V) for inference, or to utilize the LLM API as an evaluator or selector-extractor, you must first configure your API key. We recommend utilizing the **OpenAI-compatible** API schema to access all Video-LLMs.
 
  - ​ If you need to use the API, enter your key in the corresponding key field. The API keys will be automatically loaded during inference and evaluation. You can place the required API keys in the `$VideoNoise/.env` file or set them directly as environment variables. If you choose to create a `.env` file, its contents should look like this:
  ```
