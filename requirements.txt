@@ -1,5 +1,3 @@
-torch==2.3.0
-torchvision==0.18.0
 transformers==4.49.0
 accelerate
 decord; platform_machine != 'arm64'
@@ -23,7 +21,6 @@ pillow
 portalocker
 protobuf
 python-dotenv
-PyAV
 qwen-vl-utils[decord]==0.0.8
 requests
 rich
@@ -42,3 +39,5 @@ ultralytics
 validators
 xlsxwriter
 ffmpeg-python
+torch==2.3.0
+torchvision==0.18.0
