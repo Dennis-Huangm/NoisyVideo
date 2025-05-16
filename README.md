@@ -1,4 +1,4 @@
-![输入图片说明](docs/benchmark.png)
+![输入图片说明](imgs/benchmark.png)
 
 # NoisyVideo
 
@@ -26,7 +26,7 @@
 
 We introduce a wide range of noise types that reflect real-world situations in video data to evaluate the robustness of Video-LLMs. From the literature, we identify **36 types of different noise** due to capturing, processing, and saving.
 To better analyze the impacts of different noises, we further categorize them into 8 groups by their characteristics. Namely, they are distinct noises related to **quality**, **temporality**, **blurring**, **lighting/color**, **scene interference**, **digitality**, **occlusion**, and **compression**.
-![输入图片说明](docs/noise.png)
+![输入图片说明](imgs/noise.png)
 Noise implementations are stored in the `video_noise` directory, organized into individual files by noise category.
 |Noise types| Specific Noise |
 |:--:|--|
